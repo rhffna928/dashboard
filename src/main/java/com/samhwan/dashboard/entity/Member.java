@@ -20,8 +20,10 @@ import lombok.Setter;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long m_id;
+    private Long m_idx;
 
+    @Column(name = "m_id")
+    private String m_id;
     @Column(name = "m_name")
     private String m_name;
     @Column(name = "m_pswd")
