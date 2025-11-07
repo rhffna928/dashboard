@@ -1,45 +1,69 @@
 package com.samhwan.dashboard.config;
+import java.io.IOException;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
+
+import com.samhwan.dashboard.filter.JwtAuthenticationFilter;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
+
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final FailedAuthenticationEntryPoint failedAuthenticationEntryPoint;
+
+    
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception{
+        httpSecurity
+            .cors(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth->auth
+                //공개하는 권한 그 외는 인증 필요
+                .requestMatchers("/api/members").permitAll()
+                .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(failedAuthenticationEntryPoint));
 
-        return http
-                // stateless한 rest api를 개발할 것이므로 csrf 공격에 대한 옵션은 꺼둔다.
-                //.csrf(AbstractHttpConfigurer::disable)
-                .csrf(csrf -> csrf.disable())
+        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-                // 특정 URL에 대한 권한 설정.
-                .authorizeHttpRequests((authorizeRequests) -> {
-                    authorizeRequests.requestMatchers("/member/**").authenticated();
-
-                    authorizeRequests.requestMatchers("/asd")
-
-                    // ROLE은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE이 붙기 때문이다.
-                    .hasAnyRole("ADMIN", "MANAGER");
-
-                    authorizeRequests.requestMatchers("/admin/*")
-                    // ROLE은 붙이면 안 된다. hasRole()을 사용할 때 자동으로 ROLE이 붙기 때문이다.
-                    .hasRole("ADMIN");
-
-                    authorizeRequests.anyRequest().permitAll();
-
-                })
-
-                    .formLogin((formLogin) -> {
-                    // 권한이 필요한 요청은 해당 url로 리다이렉트 */
-                        formLogin.loginPage("/login.do");
-                    })
-
-                    .build();
+        return httpSecurity.build();
     }
+
 }
+
+@Component
+class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint{
+
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException) throws IOException, ServletException {
+
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.getWriter().write("{ \"code\": \"NP\", \"message\": \"Do not have permission.\"}");
+    }
+    
+}
+
+

@@ -1,5 +1,6 @@
 package com.samhwan.dashboard.service.implement;
 
+
 import org.springframework.stereotype.Service;
 
 import com.samhwan.dashboard.dto.MemberDto;
@@ -15,14 +16,23 @@ import lombok.AllArgsConstructor;
 public class MemberServiceImpl implements MemberService {
 
     private MemberRepository memberRepository;
+    
 
     @Override
     public MemberDto createMember(MemberDto memberDto) {
 
+        // if (memberRepository.existsById(memberDto.getM_id())){
+        //     throw new IllegalArgumentException("이미 사용중인 사용자명입니다.");
+        // }
+
         Member member = MemberMapper.mapToMember(memberDto);
+        
+
         Member savedMember = memberRepository.save(member);
+
 
         return MemberMapper.mapToMemberDto(savedMember);
     }
+
     
 }

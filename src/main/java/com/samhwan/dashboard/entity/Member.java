@@ -32,7 +32,7 @@ public class Member {
     private String m_dept;
     @Column(name = "m_phone")
     private String m_phone;
-    @Column(name = "m_role")
-    private String m_role;
+    @Column(name = "m_role", nullable = false)
+    private String m_role = "user";
 
 }

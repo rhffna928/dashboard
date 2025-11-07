@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.samhwan.dashboard.dto.MemberDto;
 import com.samhwan.dashboard.service.MemberService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/members")
+@RequiredArgsConstructor
 public class MemberController {
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
     // build Add member REST API
     @PostMapping

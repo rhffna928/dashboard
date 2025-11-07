@@ -10,7 +10,7 @@ public class MemberMapper {
             member.getM_idx(),
             member.getM_id(),
             member.getM_name(),
-            member.getM_pswd(),
+            null,
             member.getM_dept(),
             member.getM_phone(),
             member.getM_role()
