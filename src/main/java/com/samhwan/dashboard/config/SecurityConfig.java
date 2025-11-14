@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,6 +33,12 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final FailedAuthenticationEntryPoint failedAuthenticationEntryPoint;
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // BCrypt Encoder 사용
+        // BCrypt 알고리즘만 사용해서 접두어 없이 순수한 해시값만 저장됨
+        return new BCryptPasswordEncoder();
+    }
     
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception{
@@ -61,7 +69,7 @@ class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint{
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getWriter().write("{ \"code\": \"NP\", \"message\": \"Do not have permission.\"}");
+        response.getWriter().write("{ \"code\": \"AF\", \"message\": \"Authorization Failed.\"}");
     }
     
 }

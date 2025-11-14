@@ -15,18 +15,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtProvider {
 
     @Value("${secret-key}")
-    private String secetKey;
+    private String secretKey;
 
 
     //생성
-    public String create(String email){
+    public String create(String id){
 
         // 한시간
         Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
 
         String jwt = Jwts.builder()
-            .signWith(SignatureAlgorithm.ES256, secetKey)
-            .setSubject(email).setIssuedAt(new Date()).setExpiration(expiredDate)
+            .signWith(SignatureAlgorithm.HS256, secretKey)
+            .setSubject(id).setIssuedAt(new Date()).setExpiration(expiredDate)
             .compact();
         
             return jwt;
@@ -39,7 +39,7 @@ public class JwtProvider {
         Claims claims = null;
 
         try{
-            claims = Jwts.parser().setSigningKey(secetKey)
+            claims = Jwts.parser().setSigningKey(secretKey)
                 .parseClaimsJws(jwt).getBody();
         }catch(Exception exception){
             exception.printStackTrace();
