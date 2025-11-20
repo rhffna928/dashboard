@@ -1,5 +1,7 @@
 package com.samhwan.dashboard.provider;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtProvider {
@@ -19,14 +23,18 @@ public class JwtProvider {
 
 
     //생성
-    public String create(String id){
+    public String create(String userId){
 
         // 한시간
         Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
+        
         String jwt = Jwts.builder()
-            .signWith(SignatureAlgorithm.HS256, secretKey)
-            .setSubject(id).setIssuedAt(new Date()).setExpiration(expiredDate)
+            .setSubject(String.valueOf(userId))
+            .setSubject(userId).setIssuedAt(new Date()).setExpiration(expiredDate)
+            .signWith(key,SignatureAlgorithm.HS256)
             .compact();
         
             return jwt;
@@ -37,15 +45,24 @@ public class JwtProvider {
     public String validate(String jwt){
 
         Claims claims = null;
-
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        
         try{
-            claims = Jwts.parser().setSigningKey(secretKey)
-                .parseClaimsJws(jwt).getBody();
+            claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody();
         }catch(Exception exception){
             exception.printStackTrace();
             return null;
         }
         return claims.getSubject();
+    }
+    @PostConstruct
+    public void checkJwtVersion() {
+        System.out.println(">>> JJWT Version: " +
+        io.jsonwebtoken.Jwt.class.getPackage().getImplementationVersion());
     }
 
 }

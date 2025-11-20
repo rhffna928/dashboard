@@ -10,15 +10,15 @@ import com.samhwan.dashboard.dto.response.ResponseDto;
 import lombok.Getter;
 
 @Getter
-public class SignInResponseDto {
+public class SignInResponseDto extends ResponseDto{
 
     private String token;
-    private int expiredTime;
+    private int expirationTime;
 
     private SignInResponseDto(String token){
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.token = token;
-        this.expiredTime = 3600;
+        this.expirationTime = 3600;
     }
     public static ResponseEntity<SignInResponseDto> success(String token){
         SignInResponseDto result = new SignInResponseDto(token);

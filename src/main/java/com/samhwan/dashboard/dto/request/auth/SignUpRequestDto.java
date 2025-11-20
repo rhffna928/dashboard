@@ -8,11 +8,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SignInRequestDto {
+public class SignUpRequestDto {
 
     @NotBlank
     private String userId;
     @NotBlank
+    private String userName;
+    @NotBlank
     private String userPassword;
+    @NotBlank
+    private String memo;
+    @NotBlank
+    private String auth;
+    @NotBlank
+    private String phone;
+    @NotBlank
+    private String smsYn;
+    @NotBlank
+    private String email;
 
 }
