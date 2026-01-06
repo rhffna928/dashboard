@@ -1,9 +1,12 @@
 package com.samhwan.dashboard.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.samhwan.dashboard.entity.User2;
+
 
 @Repository
 public interface User2Repository extends JpaRepository<User2, Integer> {
@@ -11,5 +14,7 @@ public interface User2Repository extends JpaRepository<User2, Integer> {
     boolean existsByUserId(String userId);
 
     User2 findByUserId(String userId);
+
+    List<User2> findAllByOrderByUserIdAsc();
     
 }

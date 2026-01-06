@@ -16,7 +16,7 @@ public class GetSignInUserResponseDto extends ResponseDto {
     private String userId;
     private String userName;
     // private String memo;
-    // private String auth;
+    private String auth;
     // private String phone;
     // private String email;
 
@@ -24,6 +24,7 @@ public class GetSignInUserResponseDto extends ResponseDto {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.userId = user2.getUserId();
         this.userName = user2.getUserName();
+        this.auth = user2.getAuth();
     }
 
     public static ResponseEntity<GetSignInUserResponseDto> success(User2 user2){
