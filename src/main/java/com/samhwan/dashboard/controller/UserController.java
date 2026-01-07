@@ -3,7 +3,6 @@ package com.samhwan.dashboard.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.samhwan.dashboard.dto.response.user.GetAdminUserListResponseDto;
 import com.samhwan.dashboard.dto.response.user.GetSignInUserResponseDto;
 import com.samhwan.dashboard.service.UserService;
 
@@ -14,14 +13,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
+
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("user")
+    @GetMapping("")
     public ResponseEntity<? super GetSignInUserResponseDto>getSignInUser(
         @AuthenticationPrincipal String userId
     ) {
@@ -29,10 +29,7 @@ public class UserController {
         return response;
     }
 
-    @GetMapping("/admin/users")
-    public ResponseEntity<? super GetAdminUserListResponseDto> getAdminUserList() {
-        return userService.getAdminUserList();
-    }
+
     
 
 }
