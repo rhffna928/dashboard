@@ -1,4 +1,4 @@
-package com.samhwan.dashboard.dto.response.user;
+package com.samhwan.dashboard.dto.response.admin;
 
 import java.util.List;
 
@@ -35,6 +35,7 @@ public class GetAdminUserListResponseDto extends ResponseDto {
     }
     @Getter
     public static class UserSummary {
+        private int id;
         private String userId;
         private String userName;
         private String memo;
@@ -44,6 +45,7 @@ public class GetAdminUserListResponseDto extends ResponseDto {
 
         public static UserSummary fromEntity(User2 users) {
             UserSummary s = new UserSummary();
+            s.id = users.getId();
             s.userId = users.getUserId();
             s.userName = users.getUserName();
             s.memo = users.getMemo();

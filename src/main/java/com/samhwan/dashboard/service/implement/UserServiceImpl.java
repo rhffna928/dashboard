@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.dto.response.user.GetAdminUserListResponseDto;
 import com.samhwan.dashboard.dto.response.user.GetSignInUserResponseDto;
 import com.samhwan.dashboard.entity.User2;
 import com.samhwan.dashboard.repository.User2Repository;
@@ -36,19 +35,6 @@ public class UserServiceImpl implements UserService{
         return GetSignInUserResponseDto.success(user2);
     }
 
-    @Override
-    public ResponseEntity<? super GetAdminUserListResponseDto> getAdminUserList() {
 
-        try {
-            // ✅ 비밀번호 같은 민감정보는 절대 응답에 포함하지 말 것
-            List<User2> users = user2Repository.findAllByOrderByUserIdAsc();
-            return GetAdminUserListResponseDto.success(users);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return GetAdminUserListResponseDto.databaseError();
-        }
-        
-    }
 
 }
