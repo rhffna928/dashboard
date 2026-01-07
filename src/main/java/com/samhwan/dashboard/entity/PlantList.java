@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name="plant_list")
-@Table(name="plant_list")
+@Entity
+@Table(name = "plant_list")
 public class PlantList {
 
-
-    @Id    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "plant_id")
     private Integer plantId;
 
@@ -45,6 +45,7 @@ public class PlantList {
     @Column(name = "address", nullable = false, length = 50)
     private String address;
 
+    // ✅ DB 컬럼이 ipAddr (camelCase) 이라서 그대로 지정
     @Column(name = "ipAddr", nullable = false, length = 50)
     private String ipAddr;
 
@@ -60,6 +61,7 @@ public class PlantList {
     @Column(name = "mjb_count", nullable = false)
     private Integer mjbCount;
 
+    // ✅ DB 컬럼이 useYN 등 camelCase 섞임 → 그대로 지정
     @Column(name = "useYN", nullable = false, length = 50)
     private String useYN;
 
@@ -87,6 +89,7 @@ public class PlantList {
     @Column(name = "infoYN", nullable = false, length = 50)
     private String infoYN;
 
+    // ✅ DB 컬럼이 commErrSec (camelCase) 이라서 그대로 지정
     @Column(name = "commErrSec", nullable = false, length = 50)
     private String commErrSec;
 
@@ -96,6 +99,7 @@ public class PlantList {
     @Column(name = "km", nullable = false, length = 50)
     private String km;
 
+    // ✅ DB 컬럼이 co2_unit (snake_case) 이라서 그대로 지정
     @Column(name = "co2_unit", nullable = false, length = 50)
     private String co2Unit;
 
@@ -138,4 +142,3 @@ public class PlantList {
     @Column(name = "regdate", nullable = false)
     private LocalDateTime regdate;
 }
-
