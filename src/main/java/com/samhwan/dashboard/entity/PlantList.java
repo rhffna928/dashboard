@@ -2,6 +2,8 @@ package com.samhwan.dashboard.entity;
 
 import java.time.LocalDateTime;
 
+import com.samhwan.dashboard.dto.request.plant.PlantUpdateRequestDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -141,4 +143,23 @@ public class PlantList {
 
     @Column(name = "regdate", nullable = false)
     private LocalDateTime regdate;
+
+
+    
+    public void updateFrom(PlantUpdateRequestDto req) {
+        this.plantName = req.getName();
+        this.plantUrl = req.getConnectUrl();
+        this.plantCapacity = req.getCapacityKw();
+        this.monthGen = req.getMonthlyGen();
+        this.plantPrice = req.getPlantPrice();
+        this.address = req.getAddress();
+        this.lat = req.getLat();
+        this.lng = req.getLng();
+
+        this.useYN = req.getActiveYn();
+        this.cbYN = req.getMeterYn();
+        this.senYN = req.getSensorYn();
+        this.mjbYN = req.getAccessIpYn();
+    }
 }
+

@@ -1,4 +1,4 @@
-package com.samhwan.dashboard.dto.response;
+package com.samhwan.dashboard.dto.response.plant;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -13,6 +13,7 @@ public class PlantResponseDto {
     private String connectUrl;   // plantUrl
     private String capacityKw;   // plantCapacity
     private Double monthlyGen;   // monthGen
+    private String plantPrice;   // plantPrice
     private String address;
     private String lat;
     private String lng;

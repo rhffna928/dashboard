@@ -1,7 +1,9 @@
 package com.samhwan.dashboard.service;
 
-import com.samhwan.dashboard.dto.response.PlantResponseDto;
+import com.samhwan.dashboard.dto.response.plant.PlantResponseDto;
 import com.samhwan.dashboard.entity.PlantList;
+import com.samhwan.dashboard.dto.request.plant.PlantUpdateRequestDto;
+import jakarta.transaction.Transactional;
 import com.samhwan.dashboard.repository.PlantListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class PlantService {
                         p.getPlantUrl(),
                         p.getPlantCapacity(),
                         p.getMonthGen(),
+                        p.getPlantPrice(),
                         p.getAddress(),
                         p.getLat(),
                         p.getLng(),
@@ -33,4 +36,20 @@ public class PlantService {
                 ))
                 .toList();
     }
+
+    @Transactional
+    public void updatePlant(Integer id, PlantUpdateRequestDto req) {
+        PlantList plant = plantListRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Plant not found: " + id));
+
+        plant.updateFrom(req);
+    }
+
+
+    @Transactional
+    public void deletePlant(Integer id) {
+        plantListRepository.deleteById(id);
+    }
+
 }
+
