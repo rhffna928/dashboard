@@ -1,20 +1,25 @@
 package com.samhwan.dashboard.controller;
 
+import java.security.Principal;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.samhwan.dashboard.dto.request.admin.UpdateUserRequestDto;
 import com.samhwan.dashboard.dto.response.admin.DeleteUserResponseDto;
 import com.samhwan.dashboard.dto.response.admin.GetAdminUserListResponseDto;
+import com.samhwan.dashboard.dto.response.admin.UpdateUserResponseDto;
 import com.samhwan.dashboard.service.AdminService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -38,10 +43,24 @@ public class AdminController {
         return adminService.deleteUser(userId);
     }
     @PutMapping("users/{userId}")
-    public String updateUser(@RequestBody String entity) {
+    public ResponseEntity<? super UpdateUserResponseDto> updateUser(
+        Principal principal,
+        @PathVariable("userId") String targetUserId,
+        @RequestBody @Valid UpdateUserRequestDto requestBody) {
+            
+        String currentUserId = principal.getName();
         
-        return entity;
+        ResponseEntity<? super UpdateUserResponseDto> request = adminService.updateUser(currentUserId,targetUserId, requestBody);
+        return request;
     }
+    // @PatchMapping("users/{userId}/password-reset")
+    // public ResponseEntity<? super ResetPasswordResponseDto> resetPassword(
+    //     Principal principal,
+    //     @PathVariable("userId") String targetUserId
+    // ) {
+    //     String currentUserId = principal.getName();
+    //     return adminService.resetPassword(currentUserId, targetUserId);
+    // }
 
 
 }

@@ -3,6 +3,8 @@ package com.samhwan.dashboard.service.implement;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.samhwan.dashboard.dto.request.admin.UpdateUserRequestDto;
 import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.dto.response.admin.DeleteUserResponseDto;
 import com.samhwan.dashboard.dto.response.admin.GetAdminUserListResponseDto;
@@ -20,11 +22,15 @@ public class AdminServiceImpl implements AdminService{
     
     private final AdminRepository adminRepository;
 
+    private boolean isAdmin(User2 user) {
+        // auth == 5 이 관리자라면
+        return user != null && "5".equals(user.getAuth());
+    }
     @Override
     public ResponseEntity<? super GetAdminUserListResponseDto> getAdminUserList() {
 
         try {
-            List<User2> users = adminRepository.findAllByOrderByUserIdAsc();
+            List<User2> users = adminRepository.findAllByOrderByUserIdDesc();
             return GetAdminUserListResponseDto.success(users);
 
         } catch (Exception e) {
@@ -37,7 +43,7 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public ResponseEntity<? super DeleteUserResponseDto> deleteUser(String userId) {
         try {
-            User2 target = adminRepository.findByUserId(userId);
+            User2 target = adminRepository.findByUserId(userId).orElse(null);
             if (target == null) return DeleteUserResponseDto.notExistUser();
 
             adminRepository.delete(target);
@@ -50,10 +56,21 @@ public class AdminServiceImpl implements AdminService{
         }
     }
 
+    @Transactional
     @Override
-    public ResponseEntity<? super UpdateUserResponseDto> updateUser(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateUser'");
+    public ResponseEntity<? super UpdateUserResponseDto> updateUser(
+        String currentUserId,
+        String targetUserId, UpdateUserRequestDto requestBody) {
+        System.out.println(targetUserId);
+        User2 currentUser = adminRepository.findByUserId(currentUserId).orElse(null);
+        if(!isAdmin(currentUser)) return UpdateUserResponseDto.permit();
+        User2 targetUser = adminRepository.findByUserId(targetUserId).orElse(null);
+        if(targetUser == null) return UpdateUserResponseDto.notExistUser();
+
+        targetUser.updateAdmin(requestBody);
+        System.out.println(requestBody.getUserName());
+        System.out.println(targetUser.getUserName());
+        return UpdateUserResponseDto.success(targetUser);
     }
 
 }
