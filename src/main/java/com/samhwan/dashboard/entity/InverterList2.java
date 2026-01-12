@@ -2,6 +2,8 @@ package com.samhwan.dashboard.entity;
 
 import java.time.LocalDateTime;
 
+import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,15 +11,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name="inverter_list")
-@Table(name="inverter_list")
-public class InverterList {
+@Entity(name="inverter_list2")
+@Table(name="inverter_list2")
+public class InverterList2 {
 
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,4 +80,33 @@ public class InverterList {
 
     @Column(name = "regdate", nullable = false)
     private LocalDateTime regdate;
+
+
+    @Builder
+    public InverterList2(CreateInverterRequestDto dto) {
+        this.plantId = dto.getPlantId();
+        this.groupId = dto.getGroupId();
+        this.unitId = dto.getUnitId();
+        this.invId = dto.getInvId();
+        this.invName = dto.getInvName();
+        this.invType = dto.getInvType();
+        this.invModel = dto.getInvModel();
+        this.invProtocol = dto.getInvProtocol();
+
+        // DDL DEFAULT 0.0 고려: dto가 null일 가능성 있으면 방어
+        this.invCapacity = dto.getInvCapacity() != null ? dto.getInvCapacity() : 0.0;
+        this.minPower    = dto.getMinPower() != null ? dto.getMinPower() : 0.0;
+        this.maxPower    = dto.getMaxPower() != null ? dto.getMaxPower() : 0.0;
+        this.todayGen    = dto.getTodayGen() != null ? dto.getTodayGen() : 0.0;
+        this.totalGen    = dto.getTotalGen() != null ? dto.getTotalGen() : 0.0;
+
+        this.useYn = dto.getUseYn();
+        this.invFault = dto.getInvFault();
+        // DDL DEFAULT 0 고려
+        this.mccbId = dto.getMccbId() != null ? dto.getMccbId() : 0;
+
+        this.mccbStatus = dto.getMccbStatus() != null ? dto.getMccbStatus() : 0;
+
+    }
+
 }

@@ -69,7 +69,6 @@ public class AdminServiceImpl implements AdminService{
 
         targetUser.updateAdmin(requestBody);
         System.out.println(requestBody.getUserName());
-        System.out.println(targetUser.getUserName());
         return UpdateUserResponseDto.success(targetUser);
     }
 
