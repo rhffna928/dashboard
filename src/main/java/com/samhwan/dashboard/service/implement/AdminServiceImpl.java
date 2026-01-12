@@ -62,6 +62,7 @@ public class AdminServiceImpl implements AdminService{
         String currentUserId,
         String targetUserId, UpdateUserRequestDto requestBody) {
         System.out.println(targetUserId);
+        
         User2 currentUser = adminRepository.findByUserId(currentUserId).orElse(null);
         if(!isAdmin(currentUser)) return UpdateUserResponseDto.permit();
         User2 targetUser = adminRepository.findByUserId(targetUserId).orElse(null);

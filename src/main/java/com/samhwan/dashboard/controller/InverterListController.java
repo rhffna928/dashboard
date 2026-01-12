@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.samhwan.dashboard.dto.response.inverter.CreateInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.UpdateInverterListResponseDto;
 import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
+import com.samhwan.dashboard.dto.request.inverter.UpdateInverterListRequestDto;
 import com.samhwan.dashboard.dto.response.inverter.GetInverterList2ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.DeleteInverterListResponseDto;
 import com.samhwan.dashboard.service.InverterListService;
 
 import jakarta.validation.Valid;
@@ -59,23 +62,25 @@ public class InverterListController {
         // }
     }
     @PutMapping("{id}")
-    public ResponseEntity<? super CreateInverterResponseDto> updateInverter(
+    public ResponseEntity<? super UpdateInverterListResponseDto> updateInverter(
         Principal principal,
-        @PathVariable("id") String id,
-        @Valid CreateInverterRequestDto requestBody
+        @PathVariable("id") Integer id,
+        @Valid @RequestBody UpdateInverterListRequestDto requestBody
     ) {
         String currentUserId = principal.getName();
-
-        ResponseEntity<? super CreateInverterResponseDto> response = inverterService.updateInverter(currentUserId,id,requestBody);
+        System.out.println(requestBody);
+        System.out.println(currentUserId);
+        System.out.println(id);
+        ResponseEntity<? super UpdateInverterListResponseDto> response = inverterService.updateInverter(currentUserId,id,requestBody);
         return response;
 
     }
     @DeleteMapping("{id}")
-    public ResponseEntity<? super CreateInverterResponseDto> deleteInverter(
-        @PathVariable("id") String id
+    public ResponseEntity<? super DeleteInverterListResponseDto> deleteInverter(
+        @PathVariable("id") Integer id
     ) {
 
-        ResponseEntity<? super CreateInverterResponseDto> response = inverterService.deleteInverter(id);
+        ResponseEntity<? super DeleteInverterListResponseDto> response = inverterService.deleteInverter(id);
         return response;
 
     }
