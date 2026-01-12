@@ -1,57 +1,41 @@
 package com.samhwan.dashboard.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.samhwan.dashboard.dto.response.inverter.CreateInverterResponseDto;
-import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
-import com.samhwan.dashboard.dto.response.inverter.GetInverterList2ResponseDto;
+import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.service.InverterService;
-
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/invt")
+@RequestMapping("/api/inverters")
 @RequiredArgsConstructor
 public class InverterController {
 
     private final InverterService inverterService;
 
-    @GetMapping("")
-    public ResponseEntity<? super GetInverterList2ResponseDto> getInverterList2() {
-        System.out.println("hello");
-        return inverterService.getInverterList2();
+    // 발전소별 인버터 목록(최신 데이터들)
+    @GetMapping("/plant/{plantId}")
+    public List<Inverter> getInvertersByPlant(@PathVariable("plantId") Integer plantId) {
+        return inverterService.getLatestByPlant(plantId);
     }
-    @PostMapping("create")
-    public ResponseEntity<? super CreateInverterResponseDto> createInverter(
-        @RequestBody @Valid CreateInverterRequestDto requestBody
+
+    // 그래프용(오늘 시계열)
+    @GetMapping("/plant/{plantId}/inv/{invId}/today")
+    public List<Inverter> getTodaySeries(
+            @PathVariable("plantId") Integer plantId,
+            @PathVariable("invId") Integer invId
     ) {
-        System.out.println("hello");
-        ResponseEntity<? super CreateInverterResponseDto> response = inverterService.createInverter(requestBody);
-        return response;
-        // {
-        //     "plantId": 0,
-        //     "groupId": 0,
-        //     "unitId": 1,
-        //     "invId": "1",
-        //     "invName": "123",
-        //     "invType": "test",
-        //     "invModel": "test",
-        //     "invProtocol": "test",
-        //     "invCapacity": 0.0,
-        //     "minPower": 0.0,
-        //     "maxPower": 0.0,
-        //     "todayGen": 0.0,
-        //     "totalGen": 0.0,
-        //     "useYn": "N",
-        //     "invFault": "0",
-        //     "mccbId": 0,
-        //     "mccbStatus": 0
-        // }
+        return inverterService.getTodaySeries(plantId, invId);
     }
+
+    @GetMapping("/plant/{plantId}/inv/{invId}/recent")
+    public List<Inverter> getRecentSeries(
+            @PathVariable("plantId") Integer plantId,
+            @PathVariable("invId") Integer invId,
+            @RequestParam(name = "limit", defaultValue = "200") Integer limit
+    ) {
+        return inverterService.getRecentSeries(plantId, invId, limit);
+    }
+
 }
