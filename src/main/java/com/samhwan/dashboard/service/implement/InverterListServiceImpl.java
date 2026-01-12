@@ -13,14 +13,14 @@ import com.samhwan.dashboard.dto.response.inverter.GetInverterList2ResponseDto;
 import com.samhwan.dashboard.entity.InverterList2;
 import com.samhwan.dashboard.repository.InverterList2Repository;
 import com.samhwan.dashboard.repository.InverterRepository;
-import com.samhwan.dashboard.service.InverterService;
+import com.samhwan.dashboard.service.InverterListService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class InverterServiceImpl implements InverterService{
+public class InverterListServiceImpl implements InverterListService{
     
     private final InverterRepository inverterRepository;
     private final InverterList2Repository inverterList2Repository;
