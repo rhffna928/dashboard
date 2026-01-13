@@ -25,18 +25,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InverterListController {
 
-    private final InverterListService inverterService;
+    private final InverterListService inverterListService;
 
     @GetMapping("")
     public ResponseEntity<? super GetInverterList2ResponseDto> getInverterList2() {
-        return inverterService.getInverterList2();
+        return inverterListService.getInverterList2();
     }
     @PostMapping("create")
     public ResponseEntity<? super CreateInverterResponseDto> createInverter(
         @RequestBody @Valid CreateInverterRequestDto requestBody
     ) {
 
-        ResponseEntity<? super CreateInverterResponseDto> response = inverterService.createInverter(requestBody);
+        ResponseEntity<? super CreateInverterResponseDto> response = inverterListService.createInverter(requestBody);
         return response;
         // {
         //     "plantId": 0,
@@ -66,7 +66,7 @@ public class InverterListController {
     ) {
         String currentUserId = principal.getName();
 
-        ResponseEntity<? super CreateInverterResponseDto> response = inverterService.updateInverter(currentUserId,id,requestBody);
+        ResponseEntity<? super CreateInverterResponseDto> response = inverterListService.updateInverter(currentUserId,id,requestBody);
         return response;
 
     }
@@ -75,7 +75,7 @@ public class InverterListController {
         @PathVariable("id") String id
     ) {
 
-        ResponseEntity<? super CreateInverterResponseDto> response = inverterService.deleteInverter(id);
+        ResponseEntity<? super CreateInverterResponseDto> response = inverterListService.deleteInverter(id);
         return response;
 
     }
