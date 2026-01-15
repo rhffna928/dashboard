@@ -17,7 +17,7 @@ public class PlantResponseDto {
     private String address;
     private String lat;
     private String lng;
-
+    private Integer invCount;
     private String activeYn;     // useYN
     private String meterYn;      // cbYN
     private String sensorYn;     // senYN

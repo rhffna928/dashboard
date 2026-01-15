@@ -28,6 +28,7 @@ public class PlantService {
                         p.getAddress(),
                         p.getLat(),
                         p.getLng(),
+                        p.getInvCount(),
                         p.getUseYN(),
                         p.getCbYN(),
                         p.getSenYN(),

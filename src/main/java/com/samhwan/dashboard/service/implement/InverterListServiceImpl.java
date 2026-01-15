@@ -19,6 +19,8 @@ import com.samhwan.dashboard.entity.User2;
 import com.samhwan.dashboard.repository.AdminRepository;
 import com.samhwan.dashboard.repository.InverterList2Repository;
 import com.samhwan.dashboard.repository.InverterRepository;
+import com.samhwan.dashboard.repository.PlantList2Repository;
+import com.samhwan.dashboard.repository.PlantListRepository;
 import com.samhwan.dashboard.service.InverterListService;
 
 import jakarta.transaction.Transactional;
@@ -31,6 +33,7 @@ public class InverterListServiceImpl implements InverterListService{
     private final InverterRepository inverterRepository;
     private final InverterList2Repository inverterList2Repository;
     private final AdminRepository adminRepository;
+    private final PlantList2Repository plantList2Repository;
     
     private boolean isAdmin(User2 user) {
         // auth == 5 이 관리자라면
@@ -51,6 +54,7 @@ public class InverterListServiceImpl implements InverterListService{
         
     }
 
+    @Transactional
     @Override
     public ResponseEntity<? super CreateInverterResponseDto> createInverter(CreateInverterRequestDto dto) {
            
@@ -64,6 +68,12 @@ public class InverterListServiceImpl implements InverterListService{
             System.out.println(dto);
             System.out.println(inverterList2.getInvName());
             inverterList2Repository.save(inverterList2);
+            Integer plantid = inverterList2.getUnitId();
+
+            int updated = plantList2Repository.incInvCountUp(plantid);
+            if (updated  == 0 ){
+                throw new IllegalAccessException("해당 unit_id의 plant가 존재하지 않습니다: " + plantid);
+            }
 
         }catch(Exception e){
             e.printStackTrace();
@@ -83,7 +93,7 @@ public class InverterListServiceImpl implements InverterListService{
         if(!isAdmin(currentUser)) return UpdateInverterListResponseDto.permit();
         InverterList2 targetId = inverterList2Repository.findById(id).orElse(null);
         if(targetId == null) return UpdateInverterListResponseDto.notExistUser();
-
+        targetId.updateInverterList2(requestBody);
         return UpdateInverterListResponseDto.success(targetId);
     }
 
@@ -93,8 +103,15 @@ public class InverterListServiceImpl implements InverterListService{
         try {
             InverterList2 target = inverterList2Repository.findById(id).orElse(null);
             if (target == null) return DeleteInverterListResponseDto.notExistUser();
+            int oldUnitId = target.getUnitId();
 
             inverterList2Repository.delete(target);
+
+            Integer updated = plantList2Repository.incInvCountDown(oldUnitId);
+            if (updated  == 0 ){
+                throw new IllegalAccessException("inv_count 감소 실패(plant 없음 또는 이미 0): unit_id=" + oldUnitId);
+            }
+            
 
             return DeleteInverterListResponseDto.success(id);
             

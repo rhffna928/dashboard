@@ -3,6 +3,7 @@ package com.samhwan.dashboard.entity;
 import java.time.LocalDateTime;
 
 import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
+import com.samhwan.dashboard.dto.request.inverter.UpdateInverterListRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -108,5 +109,30 @@ public class InverterList2 {
         this.mccbStatus = dto.getMccbStatus() != null ? dto.getMccbStatus() : 0;
 
     }
+    
+    public void updateInverterList2(UpdateInverterListRequestDto dto) {
+        this.plantId = dto.getPlantId();
+        this.groupId = dto.getGroupId();
+        this.unitId = dto.getUnitId();
+        this.invId = dto.getInvId();
+        this.invName = dto.getInvName();
+        this.invType = dto.getInvType();
+        this.invModel = dto.getInvModel();
+        this.invProtocol = dto.getInvProtocol();
 
+        // DDL DEFAULT 0.0 고려: dto가 null일 가능성 있으면 방어
+        this.invCapacity = dto.getInvCapacity() != null ? dto.getInvCapacity() : 0.0;
+        this.minPower    = dto.getMinPower() != null ? dto.getMinPower() : 0.0;
+        this.maxPower    = dto.getMaxPower() != null ? dto.getMaxPower() : 0.0;
+        this.todayGen    = dto.getTodayGen() != null ? dto.getTodayGen() : 0.0;
+        this.totalGen    = dto.getTotalGen() != null ? dto.getTotalGen() : 0.0;
+
+        this.useYn = dto.getUseYn();
+        this.invFault = dto.getInvFault();
+        // DDL DEFAULT 0 고려
+        this.mccbId = dto.getMccbId() != null ? dto.getMccbId() : 0;
+
+        this.mccbStatus = dto.getMccbStatus() != null ? dto.getMccbStatus() : 0;
+
+    }
 }

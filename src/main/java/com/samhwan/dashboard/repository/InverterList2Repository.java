@@ -15,4 +15,5 @@ public interface InverterList2Repository extends JpaRepository<InverterList2, In
 
     boolean existsByInvName(String invName);
     
+    InverterList2 findByUnitId(Integer id);
 }
