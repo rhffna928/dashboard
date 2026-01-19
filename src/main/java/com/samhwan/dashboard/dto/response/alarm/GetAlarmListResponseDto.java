@@ -2,16 +2,13 @@ package com.samhwan.dashboard.dto.response.alarm;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitterReturnValueHandler;
-
 import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetInverterList2ResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetInverterList2ResponseDto.InverterSummary;
-import com.samhwan.dashboard.entity.InverterList2;
+import com.samhwan.dashboard.entity.Alarm;
 
 import lombok.Getter;
 
@@ -30,11 +27,11 @@ public class GetAlarmListResponseDto extends ResponseDto {
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
     }
-    public static ResponseEntity<GetInverterList2ResponseDto> success(List<InverterList2> inverters){
-        List<InverterSummary> list = inverters.stream()
-                                    .map(InverterSummary::fromEntity)
+    public static ResponseEntity<GetAlarmListResponseDto> success(Page<Alarm> page){
+        List<AlarmSummary> list = page.getContent().stream()
+                                    .map(AlarmSummary::fromEntity)
                                     .toList();
-        GetInverterList2ResponseDto result =  new GetInverterList2ResponseDto(list);
+        GetAlarmListResponseDto result =  new GetAlarmListResponseDto(list, page);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -51,7 +48,7 @@ public class GetAlarmListResponseDto extends ResponseDto {
         public static AlarmSummary fromEntity(Alarm a) {
         AlarmSummary s = new AlarmSummary();
         s.id = a.getId();
-        s.plantId = a.getPlantId();
+        s.plantId = a.getPlant().getPlantId();
         s.deviceType = a.getDeviceType();
         s.deviceId = a.getDeviceId();
         s.occurredAt = a.getRegdate().toString(); // 필요하면 포맷터 적용
