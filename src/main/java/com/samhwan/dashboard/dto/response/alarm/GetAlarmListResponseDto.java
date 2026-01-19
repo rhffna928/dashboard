@@ -48,7 +48,7 @@ public class GetAlarmListResponseDto extends ResponseDto {
         public static AlarmSummary fromEntity(Alarm a) {
         AlarmSummary s = new AlarmSummary();
         s.id = a.getId();
-        s.plantId = a.getPlant().getPlantId();
+        s.plantId = a.getPlantId();
         s.deviceType = a.getDeviceType();
         s.deviceId = a.getDeviceId();
         s.occurredAt = a.getRegdate().toString(); // 필요하면 포맷터 적용

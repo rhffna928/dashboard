@@ -18,50 +18,61 @@ import com.samhwan.dashboard.entity.Alarm;
 @Repository
 public interface AlarmRepository extends JpaRepository<Alarm, Integer> {
     
-  @Query("""
-    select a
-    from Alarm a
-    join a.plant p
-    join p.user u
-    where u.userId = :userId
-      and (:plantId is null or p.plantId = :plantId)
-      and a.regdate >= :fromDt
-      and a.regdate < :toExclusive
-      and (:dt = 'ALL' or a.deviceType = :dt)
-      and (:di = 'ALL' or a.deviceId = :di)
-      and a.alertFlag <> '3'
-    order by a.regdate desc
-  """)
-  Page<Alarm> findAlarmList(
-      @Param("userId") String userId,
-      @Param("plantId") Integer plantId,
-      @Param("fromDt") LocalDateTime fromDt,
-      @Param("toExclusive") LocalDateTime toExclusive,
-      @Param("dt") String dt,
-      @Param("di") String di,
-      Pageable pageable
-  );
+    @Query(
+        value = """
+            SELECT a
+            FROM Alarm a
+            JOIN PlantList2 p ON p.plantId = a.plantId
+            WHERE p.userId = :userId
+              AND (:plantId IS NULL OR a.plantId = :plantId)
+              AND a.regdate >= :fromDt
+              AND a.regdate <  :toExclusive
+              AND (:deviceType = 'ALL' OR a.deviceType = :deviceType)
+              AND (:deviceId   = 'ALL' OR a.deviceId   = :deviceId)
+              AND a.alertFlag <> '3'
+            ORDER BY a.regdate DESC
+            """,
+        countQuery = """
+            SELECT COUNT(a)
+            FROM Alarm a
+            JOIN PlantList2 p ON p.plantId = a.plantId
+            WHERE p.userId = :userId
+              AND (:plantId IS NULL OR a.plantId = :plantId)
+              AND a.regdate >= :fromDt
+              AND a.regdate <  :toExclusive
+              AND (:deviceType = 'ALL' OR a.deviceType = :deviceType)
+              AND (:deviceId   = 'ALL' OR a.deviceId   = :deviceId)
+              AND a.alertFlag <> '3'
+            """
+    )
+    Page<Alarm> findAlarmList(
+        @Param("userId") String userId,
+        @Param("plantId") Integer plantId,
+        @Param("fromDt") LocalDateTime fromDt,
+        @Param("toExclusive") LocalDateTime toExclusive,
+        @Param("deviceType") String deviceType,
+        @Param("deviceId") String deviceId,
+        Pageable pageable
+    );
 
-  @Query("""
-    select distinct a.deviceId
-    from Alarm a
-    join a.plant p
-    join p.user u
-    where u.userId = :userId
-      and (:plantId is null or p.plantId = :plantId)
-      and a.regdate >= :fromDt
-      and a.regdate < :toExclusive
-      and (:dt = 'ALL' or a.deviceType = :dt)
-      and a.alertFlag <> '3'
-    order by a.deviceId asc
-  """)
-  List<String> findDeviceIdOptions(
-    String userId,
-    Integer plantId,
-    LocalDateTime fromDt,
-    LocalDateTime toExclusive,
-    String dt
-  );
-
-    
+    @Query("""
+        SELECT DISTINCT a.deviceId
+        FROM Alarm a
+        JOIN PlantList2 p ON p.plantId = a.plantId
+        WHERE p.userId = :userId
+          AND (:plantId IS NULL OR a.plantId = :plantId)
+          AND a.regdate >= :fromDt
+          AND a.regdate <  :toExclusive
+          AND (:deviceType = 'ALL' OR a.deviceType = :deviceType)
+          AND a.alertFlag <> '3'
+        ORDER BY a.deviceId ASC
+    """)
+    List<String> findDeviceIdOptions(
+        @Param("userId") String userId,
+        @Param("plantId") Integer plantId,
+        @Param("fromDt") LocalDateTime fromDt,
+        @Param("toExclusive") LocalDateTime toExclusive,
+        @Param("deviceType") String deviceType
+    );
+  
 }

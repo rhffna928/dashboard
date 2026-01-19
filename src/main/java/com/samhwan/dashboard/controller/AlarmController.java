@@ -9,6 +9,7 @@ import com.samhwan.dashboard.service.AlarmService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,7 +29,7 @@ public class AlarmController {
 
     @GetMapping("/list")
     public ResponseEntity<? super GetAlarmListResponseDto> getAlarmList(
-        @AuthenticationPrincipal(expression = "userId") String userId,
+        @AuthenticationPrincipal String userId,
         @RequestParam(required = false) Integer plantId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -38,12 +39,14 @@ public class AlarmController {
         @RequestParam(defaultValue = "20") int size
 
     ) {
+        
+        System.out.println("userId=" + userId);
         return alarmService.getAlarmList(userId, plantId, from, to, deviceType, deviceId, page, size);
     }
     
     @GetMapping("/device-ids")
     public ResponseEntity<? super GetAlarmDeviceIdOptionsResponseDto> getDeviceIdOptions(
-        @AuthenticationPrincipal(expression = "userId") String userId,
+        @AuthenticationPrincipal String userId,
         @RequestParam(required = false) Integer plantId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
