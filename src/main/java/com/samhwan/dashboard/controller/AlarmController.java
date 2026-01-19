@@ -1,5 +1,5 @@
 package com.samhwan.dashboard.controller;
 
-public class AlramController {
+public class AlarmController {
 
 }

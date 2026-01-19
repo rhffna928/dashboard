@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.samhwan.dashboard.entity.Alram;
+import com.samhwan.dashboard.entity.Alarm;
 import com.samhwan.dashboard.entity.User2;
 
 
 @Repository
-public interface AlramRepository extends JpaRepository<Alram, Integer> {
+public interface AlarmRepository extends JpaRepository<Alarm, Integer> {
     
   @Query("""
     select new com.samhwan.dashboard.dto.AlarmViewDto(
@@ -34,7 +34,7 @@ public interface AlramRepository extends JpaRepository<Alram, Integer> {
     where u.userId = :userId
     order by a.regdate desc
   """)
-  Page<AlarmViewDto> findRecentAlarmsForUser(@Param("userId") String userId, Pageable pageable);
+  Page<GetAlarmListResponseDto> findRecentAlarmsForUser(@Param("userId") String userId, Pageable pageable);
 
     
 }

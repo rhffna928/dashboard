@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity(name = "alarm")
 @Table(name = "alarm")
-public class Alram {
-    
+public class Alarm {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -42,10 +42,10 @@ public class Alram {
     private String alarmMessage;
 
     @Column(name = "alarm_flag", nullable = false, length = 1)
-    private String alarmFlag;
+    private String alarmFlag; // 1 발생, 2 변경, 3 해제
 
     @Column(name = "alert_flag", nullable = false, length = 1)
-    private String alertFlag;
+    private String alertFlag; // 1 시작, 2 중지, 3 삭제
 
     @Column(name = "regdate", nullable = false)
     private LocalDateTime regdate;

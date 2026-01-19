@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 
 
-public interface AlramService {
+public interface AlarmService {
 
 
 }
