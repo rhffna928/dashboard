@@ -40,7 +40,6 @@ public class AlarmController {
 
     ) {
         
-        System.out.println("userId=" + userId);
         return alarmService.getAlarmList(userId, plantId, from, to, deviceType, deviceId, page, size);
     }
     

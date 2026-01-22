@@ -26,6 +26,7 @@ public class GetAlarmListResponseDto extends ResponseDto {
         this.alarms = alarms;
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
+        
     }
     public static ResponseEntity<GetAlarmListResponseDto> success(Page<Alarm> page){
         List<AlarmSummary> list = page.getContent().stream()
@@ -41,9 +42,11 @@ public class GetAlarmListResponseDto extends ResponseDto {
         private int plantId;
         private String deviceType;
         private String deviceId;
-        private String occurredAt;     // 화면에 찍기 쉬운 문자열로
-        private String alarmType;      // 발생/변경/해제
+        private String deviceName;
+        private String alarmFlag;      // 발생/변경/해제
+        private String alertFlag;      // 발생/변경/해제
         private String alarmMessage;
+        private String regDate;
 
         public static AlarmSummary fromEntity(Alarm a) {
         AlarmSummary s = new AlarmSummary();
@@ -51,12 +54,19 @@ public class GetAlarmListResponseDto extends ResponseDto {
         s.plantId = a.getPlantId();
         s.deviceType = a.getDeviceType();
         s.deviceId = a.getDeviceId();
-        s.occurredAt = a.getRegdate().toString(); // 필요하면 포맷터 적용
-        s.alarmType = switch (a.getAlarmFlag()) {
+        s.deviceName = a.getDeviceName();
+        s.regDate = a.getRegdate().toString(); // 필요하면 포맷터 적용
+        s.alarmFlag = switch (a.getAlarmFlag()) {
             case "1" -> "발생";
             case "2" -> "변경";
             case "3" -> "해제";
             default -> a.getAlarmFlag();
+        };
+        s.alertFlag = switch (a.getAlertFlag()) {
+            case "1" -> "발생";
+            case "2" -> "변경";
+            case "3" -> "해제";
+            default -> a.getAlertFlag();
         };
         s.alarmMessage = a.getAlarmMessage();
         return s;

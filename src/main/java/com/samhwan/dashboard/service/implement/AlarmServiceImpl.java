@@ -47,7 +47,7 @@ public class AlarmServiceImpl implements AlarmService{
         Page<Alarm> result = alarmRepository.findAlarmList(
             userId, plantId, fromDt, toExclusive, dt, di, PageRequest.of(safePage, safeSize)
         );
-
+        
         return GetAlarmListResponseDto.success(result);
 
     }
