@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inverters")
+@RequestMapping("/api/v1/inverters")
 @RequiredArgsConstructor
 public class InverterController {
 
