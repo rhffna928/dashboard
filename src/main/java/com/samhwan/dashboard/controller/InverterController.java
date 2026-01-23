@@ -1,10 +1,17 @@
 package com.samhwan.dashboard.controller;
 
+import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
+import com.samhwan.dashboard.service.InverterInterfaceService;
 import com.samhwan.dashboard.service.InverterService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -13,7 +20,7 @@ import java.util.List;
 public class InverterController {
 
     private final InverterService inverterService;
-
+    private final InverterInterfaceService inverterInterfaceService;
     // 발전소별 인버터 목록(최신 데이터들)
     @GetMapping("/plant/{plantId}")
     public List<Inverter> getInvertersByPlant(@PathVariable("plantId") Integer plantId) {
@@ -36,6 +43,13 @@ public class InverterController {
             @RequestParam(name = "limit", defaultValue = "200") Integer limit
     ) {
         return inverterService.getRecentSeries(plantId, invId, limit);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<? super GetInverterResponseDto> getInverter(
+        @AuthenticationPrincipal String userId
+    ) {
+        return inverterInterfaceService.getInverter(userId);
     }
 
 }

@@ -60,10 +60,13 @@ public class InverterListServiceImpl implements InverterListService{
            
         try{
             String invName = dto.getInvName();
+            
             System.out.println(dto);
-            boolean exexistsById = inverterList2Repository.existsByInvName(invName);
+            boolean exexistsByName = inverterList2Repository.existsByInvName(invName);
+            if(exexistsByName) return CreateInverterResponseDto.duplicateId();
+            String invId = dto.getInvId();
+            boolean exexistsById = inverterList2Repository.existsByInvName(invId);
             if(exexistsById) return CreateInverterResponseDto.duplicateId();
-
             InverterList2 inverterList2 = new InverterList2(dto);
             System.out.println(dto);
             System.out.println(inverterList2.getInvName());
