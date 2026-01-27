@@ -51,6 +51,8 @@ public class AlarmServiceImpl implements AlarmService{
         return GetAlarmListResponseDto.success(result);
 
     }
+
+    
     @Override
     public ResponseEntity<? super GetAlarmDeviceIdOptionsResponseDto> getDeviceIdOptions(
         String userId,

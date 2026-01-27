@@ -30,13 +30,13 @@ public class AlarmController {
     @GetMapping("/list")
     public ResponseEntity<? super GetAlarmListResponseDto> getAlarmList(
         @AuthenticationPrincipal String userId,
-        @RequestParam(required = false) Integer plantId,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-        @RequestParam(defaultValue = "ALL") String deviceType,
-        @RequestParam(defaultValue = "ALL") String deviceId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size
+        @RequestParam(name = "plantId", required = false) Integer plantId,
+        @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(name = "to")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+        @RequestParam(name = "deviceType", defaultValue = "ALL") String deviceType,
+        @RequestParam(name = "deviceId", defaultValue = "ALL") String deviceId,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
 
     ) {
         
@@ -46,10 +46,10 @@ public class AlarmController {
     @GetMapping("/device-ids")
     public ResponseEntity<? super GetAlarmDeviceIdOptionsResponseDto> getDeviceIdOptions(
         @AuthenticationPrincipal String userId,
-        @RequestParam(required = false) Integer plantId,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-        @RequestParam(defaultValue = "인버터") String deviceType
+        @RequestParam(name = "plantId", required = false) Integer plantId,
+        @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(name = "to")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+        @RequestParam(name = "deviceType", defaultValue = "인버터") String deviceType
     ) {
         return alarmService.getDeviceIdOptions(userId, plantId, from, to, deviceType);
     }
