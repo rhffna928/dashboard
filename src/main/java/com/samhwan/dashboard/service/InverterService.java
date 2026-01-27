@@ -1,13 +1,10 @@
 package com.samhwan.dashboard.service;
 
-import com.samhwan.dashboard.dto.response.alarm.GetAlarmListResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.repository.InverterRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,16 +21,20 @@ public class GetInverterResponseDto extends ResponseDto{
 
     
     private final List<InverterSummary> inverters;
+    private final long totalElements;
+    private final int totalPages;
 
-    private GetInverterResponseDto(List<InverterSummary> inverters) {
+    private GetInverterResponseDto(List<InverterSummary> inverters, Page<Inverter> page) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.inverters = inverters;
+        this.totalElements = page.getTotalElements();
+        this.totalPages = page.getTotalPages();
     }
-    public static ResponseEntity<GetInverterResponseDto> success(List<Inverter> inverters){
-        List<InverterSummary> list = inverters.stream()
+    public static ResponseEntity<GetInverterResponseDto> success(Page<Inverter> page){
+        List<InverterSummary> list = page.getContent().stream()
                     .map(InverterSummary::fromEntity)
-                    .collect(Collectors.toList());
-        GetInverterResponseDto result =  new GetInverterResponseDto(list);
+                    .toList();
+        GetInverterResponseDto result =  new GetInverterResponseDto(list, page);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
