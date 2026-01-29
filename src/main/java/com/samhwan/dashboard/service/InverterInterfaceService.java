@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 
 import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterList2ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterResponseDto;
+
 
 public interface InverterInterfaceService {
 
@@ -16,6 +17,7 @@ public interface InverterInterfaceService {
                 Integer intervalMinutes, int page,
                 int size);
 
-        ResponseEntity<? super GetUserInverterList2ResponseDto> getUserInverterList2(String userId);
+        ResponseEntity<? super GetUserInverterResponseDto> getUserInverterLast(String userId);
+
 
 }

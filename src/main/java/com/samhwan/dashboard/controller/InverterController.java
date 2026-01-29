@@ -60,11 +60,13 @@ public class InverterController {
         System.out.println(bucketSec);
         return inverterInterfaceService.getInverterHistory(userId, invId, from, to, bucketSec, page, size);
     }
+
+
     @GetMapping("/usr")
-    public ResponseEntity<? super GetUserInverterList2ResponseDto> getUserInverterList2(
+    public ResponseEntity<? super GetUserInverterResponseDto> getUserInverterLast(
         @AuthenticationPrincipal String userId
     ) {
-        return inverterInterfaceService.getUserInverterList2(userId);
+        return inverterInterfaceService.getUserInverterLast(userId);
     }
 
 }
