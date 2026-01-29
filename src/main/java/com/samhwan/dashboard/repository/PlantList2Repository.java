@@ -1,6 +1,5 @@
 package com.samhwan.dashboard.repository;
 
-import com.samhwan.dashboard.entity.InverterList2;
 import com.samhwan.dashboard.entity.PlantList2;
 
 import java.util.List;

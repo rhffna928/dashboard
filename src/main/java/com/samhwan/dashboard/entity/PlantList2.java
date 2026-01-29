@@ -66,19 +66,19 @@ public class PlantList2 {
     @Column(name = "inv_count_disable", nullable = false)
     private Integer invCountDisable; // 인버터 비활성화 개수
 
-    @Column(name = "useYN", nullable = false, length = 50)
+    @Column(name = "use_yn", nullable = false, length = 50)
     private String useYn = "Y"; // 사용/미사용
 
-    @Column(name = "smsYN", nullable = false, length = 50)
+    @Column(name = "sms_yn", nullable = false, length = 50)
     private String smsYn = "N";
 
-    @Column(name = "infoYN", nullable = false, length = 50)
+    @Column(name = "info_yn", nullable = false, length = 50)
     private String infoYn = "N";
 
-    @Column(name = "startYmd", nullable = false, length = 50)
+    @Column(name = "start_ymd", nullable = false, length = 50)
     private String startYmd; // 발전데이터 적산시작날짜
 
-    @Column(name = "startYear", nullable = false, length = 50)
+    @Column(name = "start_year", nullable = false, length = 50)
     private String startYear; // 준공년도
 
     @Column(name = "module_info", nullable = false, length = 50)
@@ -87,7 +87,7 @@ public class PlantList2 {
     @Column(name = "inv_info", nullable = false, length = 50)
     private String invInfo; // 인버터정보
 
-    @Column(name = "getDataSec", nullable = false)
+    @Column(name = "get_data_sec", nullable = false)
     private Integer getDataSec; // 데이터수집주기(초)
 
     @Column(name = "yes_gen", nullable = false)
