@@ -25,12 +25,9 @@ public class InverterServiceImpl implements InverterInterfaceService {
     @Override
     public ResponseEntity<? super GetInverterResponseDto> getInverterHistory(
         String userId,
-        Integer plantId,
         Integer invId,
         LocalDate from,
         LocalDate to,
-        String deviceType,
-        String deviceId,
         Integer intervalMinutes,
         int page,
         int size
@@ -40,10 +37,9 @@ public class InverterServiceImpl implements InverterInterfaceService {
         int safePage = Math.max(page, 0);
         int safeSize = clamp(size, 1, 200);
         
-        int iv = (intervalMinutes == null ? 60 : intervalMinutes);
 
         Page<Inverter> result = inverterRepository.findInverterHistory(
-            userId, plantId, invId, fromDt, toExclusive, deviceType, deviceId, iv, PageRequest.of(safePage, safeSize)
+            userId, invId, fromDt, toExclusive, intervalMinutes, PageRequest.of(safePage, safeSize)
         );
         
         return GetInverterResponseDto.success(result);

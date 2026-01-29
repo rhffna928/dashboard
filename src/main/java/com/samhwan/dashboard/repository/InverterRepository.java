@@ -26,52 +26,45 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
 
 
     @Query(value = """
-        SELECT * FROM (
-          SELECT
-            i.*,
-            FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv) * :iv) AS iv,
-            ROW_NUMBER() OVER (
-              PARTITION BY
-                i.plant_id, i.inv_id,
-                FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv)
-              ORDER BY i.regdate DESC
-            ) AS rn
-          FROM inverter i
-          JOIN plant_list2 p ON p.plant_id = i.plant_id
-          WHERE p.user_id = :userId
-            AND (:plantId IS NULL OR i.plant_id = :plantId)
-            AND (:invId   IS NULL OR i.inv_id   = :invId)
-            AND i.regdate >= :fromDt
-            AND i.regdate <  :toExclusive
-        ) t
-        WHERE t.rn = 1
-        ORDER BY t.regdate DESC
+      SELECT *
+      FROM (
+        SELECT
+          i.*,  -- ✅ 콤마 필수
+          FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv) * :iv) AS bucket_time,
+          ROW_NUMBER() OVER (
+            PARTITION BY i.plant_id, i.inv_id, FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv)
+            ORDER BY i.regdate DESC
+          ) AS rn
+        FROM inverter i
+        JOIN plant_list2 p ON p.plant_id = i.plant_id
+        WHERE p.user_id = :userId
+          AND (:invId IS NULL OR i.inv_id = :invId)     -- ✅ invId가 숫자라는 가정
+          AND i.regdate >= :fromDt
+          AND i.regdate <  :toExclusive
+      ) t
+      WHERE t.rn = 1
+      ORDER BY t.regdate DESC
         """,
         countQuery = """
-        SELECT COUNT(*) FROM (
-          SELECT 1
-          FROM inverter i
-          JOIN plant_list2 p ON p.plant_id = i.plant_id
-          WHERE p.user_id = :userId
-            AND (:plantId IS NULL OR i.plant_id = :plantId)
-            AND (:invId   IS NULL OR i.inv_id   = :invId)
-            AND i.regdate >= :fromDt
-            AND i.regdate <  :toExclusive
-          GROUP BY
-            i.plant_id, i.inv_id,
-            FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv)
-        ) x
+          SELECT COUNT(*)
+          FROM (
+            SELECT 1
+            FROM inverter i
+            JOIN plant_list2 p ON p.plant_id = i.plant_id
+            WHERE p.user_id = :userId
+              AND (:invId IS NULL OR i.inv_id = :invId)
+              AND i.regdate >= :fromDt
+              AND i.regdate <  :toExclusive
+            GROUP BY i.plant_id, i.inv_id, FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv)
+          ) t
         """,
         nativeQuery = true)
     Page<Inverter> findInverterHistory(
         @Param("userId") String userId,
-        @Param("plantId") Integer plantId,
         @Param("invId") Integer invId,
         @Param("fromDt") LocalDateTime fromDt,
         @Param("toExclusive") LocalDateTime toExclusive,
-        @Param("deviceType") String deviceType,
-        @Param("deviceId") String deviceId,
-        @Param("iv") Integer iv,
+        @Param("iv") Integer intervalMinutes,
         Pageable pageable
     );
 

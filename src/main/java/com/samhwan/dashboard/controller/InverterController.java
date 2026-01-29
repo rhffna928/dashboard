@@ -49,18 +49,16 @@ public class InverterController {
     @GetMapping("")
     public ResponseEntity<? super GetInverterResponseDto> getInverterHistory(
         @AuthenticationPrincipal String userId,
-        @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId,
         @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @RequestParam(name = "to")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-        @RequestParam(name = "deviceType", defaultValue = "ALL") String deviceType,
-        @RequestParam(name = "deviceId", defaultValue = "ALL") String deviceId,
-        @RequestParam(name = "intervalMinutes", defaultValue = "60") Integer intervalMinutes,
+        @RequestParam(name = "bucketSec") Integer bucketSec,
         @RequestParam(name = "page", defaultValue = "0") int page,
         @RequestParam(name = "size", defaultValue = "20") int size
 
     ) {
-        return inverterInterfaceService.getInverterHistory(userId, plantId, invId, from, to, deviceType, deviceId, intervalMinutes, page, size);
+        System.out.println(bucketSec);
+        return inverterInterfaceService.getInverterHistory(userId, invId, from, to, bucketSec, page, size);
     }
 
 }

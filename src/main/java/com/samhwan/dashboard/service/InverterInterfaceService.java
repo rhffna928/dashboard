@@ -9,8 +9,10 @@ import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
 public interface InverterInterfaceService {
 
 
-        public ResponseEntity<? super GetInverterResponseDto> getInverterHistory(String userId, Integer plantId,
-                Integer invId, LocalDate from, LocalDate to, String deviceType,
-                String deviceId, Integer intervalMinutes, int page, int size);
+        public ResponseEntity<? super GetInverterResponseDto> getInverterHistory(
+                String userId, Integer invId,
+                LocalDate from, LocalDate to,
+                Integer intervalMinutes, int page,
+                int size);
 
 }
