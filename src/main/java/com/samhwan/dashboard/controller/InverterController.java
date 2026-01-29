@@ -1,6 +1,6 @@
 package com.samhwan.dashboard.controller;
 
-import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.*;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.service.InverterInterfaceService;
 import com.samhwan.dashboard.service.InverterService;
@@ -59,6 +59,12 @@ public class InverterController {
     ) {
         System.out.println(bucketSec);
         return inverterInterfaceService.getInverterHistory(userId, invId, from, to, bucketSec, page, size);
+    }
+    @GetMapping("/usr")
+    public ResponseEntity<? super GetUserInverterList2ResponseDto> getUserInverterList2(
+        @AuthenticationPrincipal String userId
+    ) {
+        return inverterInterfaceService.getUserInverterList2(userId);
     }
 
 }

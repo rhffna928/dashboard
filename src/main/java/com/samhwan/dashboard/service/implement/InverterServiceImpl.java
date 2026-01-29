@@ -2,6 +2,7 @@ package com.samhwan.dashboard.service.implement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterList2ResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
+import com.samhwan.dashboard.entity.InverterList2;
 import com.samhwan.dashboard.repository.InverterRepository;
 import com.samhwan.dashboard.service.InverterInterfaceService;
 
@@ -43,6 +46,21 @@ public class InverterServiceImpl implements InverterInterfaceService {
         );
         
         return GetInverterResponseDto.success(result);
+
+    }
+
+    @Override
+    public ResponseEntity<? super GetUserInverterList2ResponseDto> getUserInverterList2(
+        String userId
+    ) {
+        try{
+            List<InverterList2> list = inverterRepository.findAllByUserId(userId);
+            return GetUserInverterList2ResponseDto.success(list);
+        }catch(Exception e){
+            e.printStackTrace();
+            return GetUserInverterList2ResponseDto.databaseError();
+
+        }
 
     }
 

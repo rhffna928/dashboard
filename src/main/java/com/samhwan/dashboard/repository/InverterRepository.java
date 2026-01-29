@@ -1,6 +1,8 @@
 package com.samhwan.dashboard.repository;
 
 import com.samhwan.dashboard.entity.Inverter;
+import com.samhwan.dashboard.entity.InverterList2;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -67,6 +69,14 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         @Param("iv") Integer intervalMinutes,
         Pageable pageable
     );
+
+    @Query(value ="""
+        SELECT il.*
+        from inverter_list2 as il
+        join plant_list2 as pl ON pl.plant_id = il.plant_id
+        where pl.user_id = :userId
+        """,nativeQuery = true)
+    List<InverterList2> findAllByUserId(@Param("userId") String userId);
 
 
 
