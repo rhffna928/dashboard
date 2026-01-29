@@ -3,6 +3,7 @@ package com.samhwan.dashboard.controller;
 import java.security.Principal;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,18 +18,19 @@ import com.samhwan.dashboard.dto.response.inverter.UpdateInverterListResponseDto
 import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
 import com.samhwan.dashboard.dto.request.inverter.UpdateInverterListRequestDto;
 import com.samhwan.dashboard.dto.response.inverter.GetInverterList2ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterList2ResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.DeleteInverterListResponseDto;
-import com.samhwan.dashboard.service.InverterListService;
+import com.samhwan.dashboard.service.InverterList2Service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/invt_list")
+@RequestMapping("/api/v1/invt_list2")
 @RequiredArgsConstructor
 public class InverterListController {
 
-    private final InverterListService inverterListService;
+    private final InverterList2Service inverterListService;
 
     @GetMapping("")
     public ResponseEntity<? super GetInverterList2ResponseDto> getInverterList2() {
@@ -86,5 +88,12 @@ public class InverterListController {
         ResponseEntity<? super DeleteInverterListResponseDto> response = inverterListService.deleteInverter(id);
         return response;
 
+    }
+
+    @GetMapping("/usr")
+    public ResponseEntity<? super GetUserInverterList2ResponseDto> getUserInverterList2(
+        @AuthenticationPrincipal String userId
+    ) {
+        return inverterListService.getUserInverterList2(userId);
     }
 }
