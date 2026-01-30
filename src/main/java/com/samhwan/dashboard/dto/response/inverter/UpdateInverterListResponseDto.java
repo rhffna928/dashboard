@@ -7,11 +7,6 @@ import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.entity.InverterList2;
-import com.samhwan.dashboard.entity.User2;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 
 @Getter
