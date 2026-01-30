@@ -1,5 +1,6 @@
 package com.samhwan.dashboard.repository;
 
+import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.entity.InverterList2;
 
@@ -32,7 +33,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
       SELECT *
       FROM (
         SELECT
-          i.*,  -- ✅ 콤마 필수
+          i.*,  --  콤마 필수
           FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv) * :iv) AS bucket_time,
           ROW_NUMBER() OVER (
             PARTITION BY i.plant_id, i.inv_id, FLOOR(UNIX_TIMESTAMP(i.regdate) / :iv)
@@ -41,7 +42,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         FROM inverter i
         JOIN plant_list2 p ON p.plant_id = i.plant_id
         WHERE p.user_id = :userId
-          AND (:invId IS NULL OR i.inv_id = :invId)     -- ✅ invId가 숫자라는 가정
+          AND (:invId IS NULL OR i.inv_id = :invId)     --  invId가 숫자라는 가정
           AND i.regdate >= :fromDt
           AND i.regdate <  :toExclusive
       ) t
@@ -71,17 +72,106 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         Pageable pageable
     );
 
-    @Query(value = """
-      select i.*
-      from inverter i
-      join plant_list2 p on p.plant_id = i.plant_id
-      where p.user_id = :userId
-      order by i.regdate desc
-      limit 1
-    """, nativeQuery = true)
-    Optional<Inverter> findLatestByUserIdAndInvId(
-        @Param("userId") String userId
+    @Query(value = 
+      """
+      SELECT
+        /* 1) 발전 시간(시간): 오늘 out_power>0 인 구간의 최초~최종 regdate 차이 */
+        COALESCE((
+          SELECT ROUND(TIMESTAMPDIFF(MINUTE, MIN(i.regdate), MAX(i.regdate)) / 60, 2)
+          FROM inverter i
+          JOIN plant_list2 p ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND i.inv_id = :invId
+            AND i.plant_id = :plantId
+            AND i.regdate >= CURDATE()
+            AND i.out_power > 0
+        ), 0) AS gen_hours,
+        /* 2) 누적 발전량(kWh): 해당 inv 최신행 total_gen */
+        COALESCE((
+          SELECT ROUND(li.total_gen, 1)
+          FROM inverter li
+          JOIN plant_list2 p ON p.plant_id = li.plant_id
+          WHERE p.user_id = :userId
+            AND li.inv_id = :invId
+            AND li.plant_id = :plantId
+          ORDER BY li.regDate DESC
+          LIMIT 1
+        ), 0) AS total_gen_kwh,
+        /* 3) 월간 생산량(kWh): 이번달(일자별) max(today_gen) 합 */
+        COALESCE((
+          SELECT ROUND(SUM(d.daily_max), 1)
+          FROM (
+            SELECT DATE(i.regdate) AS d, MAX(i.today_gen) AS daily_max
+            FROM inverter i
+            JOIN plant_list2 p ON p.plant_id = i.plant_id
+            WHERE p.user_id = :userId
+              AND i.inv_id = :invId
+              AND i.plant_id = :plantId
+              AND i.regdate >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+              AND i.regdate <  DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
+            GROUP BY DATE(i.regdate)
+          ) d
+        ), 0) AS month_gen_kwh,
+        /* 4) 전일 발전량(kWh): 어제 max(today_gen) */
+        COALESCE((
+          SELECT ROUND(MAX(i.today_gen), 1)
+          FROM inverter i
+          JOIN plant_list2 p ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND i.inv_id = :invId
+            AND i.plant_id = :plantId
+            AND i.regdate >= (CURDATE() - INTERVAL 1 DAY)
+            AND i.regdate <  CURDATE()
+        ), 0) AS yesterday_gen_kwh,
+        /* 5) 금일 발전량(kWh): 최신행 today_gen */
+        COALESCE((
+          SELECT ROUND(li.today_gen, 1)
+          FROM inverter li
+          JOIN plant_list2 p ON p.plant_id = li.plant_id
+          WHERE p.user_id = :userId
+          AND li.inv_id = :invId
+          AND li.plant_id = :plantId
+          AND li.regdate >= CURDATE()
+          ORDER BY li.regDate DESC
+          LIMIT 1
+        ), 0) AS today_gen_kwh,
+        /* 6) 현재 발전량(kW): 최신행 out_power */
+        COALESCE((
+          SELECT ROUND(li.out_power, 1)
+          FROM inverter li
+          JOIN plant_list2 p ON p.plant_id = li.plant_id
+          WHERE p.user_id = :userId
+            AND li.inv_id = :invId
+            AND li.plant_id = :plantId
+          AND li.regdate >= CURDATE()
+          ORDER BY li.regDate DESC
+          LIMIT 1
+        ), 0) AS current_power_kw;
+      """, nativeQuery = true)
+    Optional<DashboardKpiView> findLatestByUserIdAndInvId(
+        @Param("userId") String userId,
+        @Param("invId") Integer invId,
+        @Param("plantId") Integer plantId
+
     );
+
+
+    @Query(value = """
+        SELECT COALESCE(SUM(i.out_power), 0) AS currentPowerKw
+        FROM inverter i
+        JOIN (
+          SELECT i2.plant_id, i2.inv_id, MAX(i2.regdate) AS max_regdate
+          FROM inverter i2
+          JOIN plant_list2 p2 ON p2.plant_id = i2.plant_id
+          WHERE p2.user_id = :userId
+            AND i2.regdate >= NOW() - INTERVAL 10 MINUTE
+          GROUP BY i2.plant_id, i2.inv_id
+        ) t
+          ON t.plant_id = i.plant_id
+        AND t.inv_id   = i.inv_id
+        AND t.max_regdate = i.regdate;
+        """, nativeQuery = true)    
+    GetUserHeaderResponseDto.InverterHeader getCurrentPower(@Param("userId") String userId);
 
 
 
