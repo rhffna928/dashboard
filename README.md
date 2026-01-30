@@ -14,11 +14,19 @@
 - 유저 목록("users")
 - 유저 업데이트("users/{userId}")
 - 유저 삭제("users/{userId}")
+
 #### 인버터 목록(/api/v1/invt_list)
 - 목록("")
 - 생성("create")
 - 업데이트("{id}")
 - 삭제("{id}")
+- 유저 인버터 목록 조회("/usr")
+- 
+#### 인버터 목록(/api/v1/inverters)
+- 유저 인버터 조회 마지막 값("/usr")
+
+#### 플랜트 목록(/api/v1/plants)
+- 유저 플랜트 목록 조회("/usr")
 
 
 
