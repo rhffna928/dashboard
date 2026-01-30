@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,13 +71,18 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         Pageable pageable
     );
 
-    @Query(value ="""
-        SELECT il.*
-        from inverter_list2 as il
-        join plant_list2 as pl ON pl.plant_id = il.plant_id
-        where pl.user_id = :userId
-        """,nativeQuery = true)
-    List<InverterList2> findAllByUserId(@Param("userId") String userId);
+    @Query(value = """
+      select i.*
+      from inverter i
+      join plant_list2 p on p.plant_id = i.plant_id
+      where p.user_id = :userId
+      order by i.regdate desc
+      limit 1
+    """, nativeQuery = true)
+    Optional<Inverter> findLatestByUserIdAndInvId(
+        @Param("userId") String userId
+    );
+
 
 
 

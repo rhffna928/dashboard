@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterList2ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.entity.InverterList2;
 import com.samhwan.dashboard.repository.InverterRepository;
@@ -49,22 +50,18 @@ public class InverterServiceImpl implements InverterInterfaceService {
 
     }
 
+
     @Override
-    public ResponseEntity<? super GetUserInverterList2ResponseDto> getUserInverterList2(
-        String userId
-    ) {
+    public ResponseEntity<? super GetUserInverterResponseDto> getUserInverterLast(String userId) {
         try{
-            List<InverterList2> list = inverterRepository.findAllByUserId(userId);
-            return GetUserInverterList2ResponseDto.success(list);
+            Inverter invt = inverterRepository.findLatestByUserIdAndInvId(userId).orElse(null);
+            return GetUserInverterResponseDto.success(invt);
         }catch(Exception e){
             e.printStackTrace();
-            return GetUserInverterList2ResponseDto.databaseError();
+            return GetUserInverterResponseDto.databaseError();
 
         }
-
     }
-
-
 
     private String normalizeToAll(String v) {
         if (v == null || v.isBlank()) return "ALL";
@@ -76,4 +73,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
         if (value > max) return max;
         return value;
     }
+
+
+
 }
