@@ -64,9 +64,17 @@ public class InverterController {
 
     @GetMapping("/usr")
     public ResponseEntity<? super GetUserInverterResponseDto> getUserInverterLast(
+        @AuthenticationPrincipal String userId,
+        @RequestParam(name = "invId", required = false) Integer invId,
+        @RequestParam(name = "plantId", required = false) Integer plantId
+    ) {
+        return inverterInterfaceService.getUserInverterLast(userId,invId,plantId);
+    }
+    @GetMapping("/header")
+    public ResponseEntity<? super GetUserHeaderResponseDto> getUserInverterheader(
         @AuthenticationPrincipal String userId
     ) {
-        return inverterInterfaceService.getUserInverterLast(userId);
+        return inverterInterfaceService.getUserInverterheader(userId);
     }
 
 }
