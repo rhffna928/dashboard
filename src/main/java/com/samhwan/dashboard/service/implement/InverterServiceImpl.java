@@ -2,9 +2,7 @@ package com.samhwan.dashboard.service.implement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
+ 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterList2ResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
-import com.samhwan.dashboard.entity.InverterList2;
 import com.samhwan.dashboard.repository.DashboardKpiView;
 import com.samhwan.dashboard.repository.InverterRepository;
 import com.samhwan.dashboard.service.InverterInterfaceService;
