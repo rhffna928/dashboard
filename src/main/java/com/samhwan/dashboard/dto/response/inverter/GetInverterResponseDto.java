@@ -12,6 +12,7 @@ import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
+import com.samhwan.dashboard.repository.InverterHistoryView;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -23,14 +24,16 @@ public class GetInverterResponseDto extends ResponseDto{
     private final List<InverterSummary> inverters;
     private final long totalElements;
     private final int totalPages;
+    
 
-    private GetInverterResponseDto(List<InverterSummary> inverters, Page<Inverter> page) {
+    private GetInverterResponseDto(List<InverterSummary> inverters, Page<InverterHistoryView> page) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.inverters = inverters;
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
+        
     }
-    public static ResponseEntity<GetInverterResponseDto> success(Page<Inverter> page){
+    public static ResponseEntity<GetInverterResponseDto> success(Page<InverterHistoryView> page){
         List<InverterSummary> list = page.getContent().stream()
                     .map(InverterSummary::fromEntity)
                     .toList();
@@ -68,9 +71,9 @@ public class GetInverterResponseDto extends ResponseDto{
 
         private LocalDateTime recvTime;
         private LocalDateTime regdate;
-    
+        private LocalDateTime bucketTime;
 
-        public static InverterSummary fromEntity(Inverter e) {
+        public static InverterSummary fromEntity(InverterHistoryView e) {
             return InverterSummary.builder()
                 .id(e.getId())
                 .plantId(e.getPlantId())
@@ -92,6 +95,7 @@ public class GetInverterResponseDto extends ResponseDto{
                 .totalGen(e.getTotalGen())
                 .recvTime(e.getRecvTime())
                 .regdate(e.getRegdate())
+                .bucketTime(e.getBucketTime())
                 .build();
         }
     }

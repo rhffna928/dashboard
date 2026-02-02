@@ -13,6 +13,7 @@ import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.repository.DashboardKpiView;
+import com.samhwan.dashboard.repository.InverterHistoryView;
 import com.samhwan.dashboard.repository.InverterRepository;
 import com.samhwan.dashboard.service.InverterInterfaceService;
 
@@ -31,7 +32,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
         Integer invId,
         LocalDate from,
         LocalDate to,
-        Integer intervalMinutes,
+        Integer bucketSec,
         int page,
         int size
     ) {
@@ -41,8 +42,8 @@ public class InverterServiceImpl implements InverterInterfaceService {
         int safeSize = clamp(size, 1, 200);
         
 
-        Page<Inverter> result = inverterRepository.findInverterHistory(
-            userId, invId, fromDt, toExclusive, intervalMinutes, PageRequest.of(safePage, safeSize)
+        Page<InverterHistoryView> result = inverterRepository.findInverterHistory(
+            userId, invId, fromDt, toExclusive, bucketSec, PageRequest.of(safePage, safeSize)
         );
         
         return GetInverterResponseDto.success(result);

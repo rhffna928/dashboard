@@ -15,7 +15,7 @@ public interface InverterInterfaceService {
         ResponseEntity<? super GetInverterResponseDto> getInverterHistory(
                 String userId, Integer invId,
                 LocalDate from, LocalDate to,
-                Integer intervalMinutes, int page,
+                Integer bucketSec, int page,
                 int size);
 
         ResponseEntity<? super GetUserInverterResponseDto> getUserInverterLast(

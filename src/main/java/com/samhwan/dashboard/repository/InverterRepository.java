@@ -36,13 +36,13 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           SELECT
             i.*,
             FROM_UNIXTIME(
-              FLOOR(UNIX_TIMESTAMP(i.regdate) / (:intervalMinutes * 60)) * (:intervalMinutes * 60)
-            ) AS bucket_time,
+              FLOOR(UNIX_TIMESTAMP(i.regdate) / (:bucketSec * 60)) * (:bucketSec * 60)
+            ) AS bucketTime,
             ROW_NUMBER() OVER (
               PARTITION BY
                 i.plant_id,
                 i.inv_id,
-                FLOOR(UNIX_TIMESTAMP(i.regdate) / (:intervalMinutes * 60))
+                FLOOR(UNIX_TIMESTAMP(i.regdate) / (:bucketSec * 60))
               ORDER BY i.regdate DESC
             ) AS rn
           FROM inverter i
@@ -61,7 +61,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           SELECT DISTINCT
             i.plant_id,
             i.inv_id,
-            FLOOR(UNIX_TIMESTAMP(i.regdate) / (:intervalMinutes * 60)) AS bucket_key
+            FLOOR(UNIX_TIMESTAMP(i.regdate) / (:bucketSec * 60)) AS bucket_key
           FROM inverter i
           JOIN plant_list2 p ON p.plant_id = i.plant_id
           WHERE p.user_id = :userId
@@ -72,12 +72,12 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
       """,
       nativeQuery = true
     )
-    Page<Inverter> findInverterHistory(
+    Page<InverterHistoryView> findInverterHistory(
         @Param("userId") String userId,
         @Param("invId") Integer invId,
         @Param("fromDt") LocalDateTime fromDt,
         @Param("toExclusive") LocalDateTime toExclusive,
-        @Param("intervalMinutes") Integer intervalMinutes,
+        @Param("bucketSec") Integer bucketSec,
         Pageable pageable
     );
 
