@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.entity.PlantList2;
 
