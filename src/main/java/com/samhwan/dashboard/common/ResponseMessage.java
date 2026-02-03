@@ -11,6 +11,8 @@ public interface ResponseMessage {
     //HTTP Status 401
     String SIGN_IN_FAIL = "Login information mismatch";
     String AUTHORIZATION_FAIL = "Authorization failed";
+    String SIGN_IN_FAILED = SIGN_IN_FAIL;
+    String AUTHORIZATION_FAILED = AUTHORIZATION_FAIL;
 
     //HTTP Status 403
     String NO_PERMISSION = "Do not have permission";
