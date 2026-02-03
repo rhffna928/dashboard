@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetInverterHistoryResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetReportResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterResponseDto;
@@ -31,8 +31,9 @@ public class InverterServiceImpl implements InverterInterfaceService {
 
 
     @Override
-    public ResponseEntity<? super GetInverterResponseDto> getInverterHistory(
+    public ResponseEntity<? super GetInverterHistoryResponseDto> getInverterHistory(
         String userId,
+        Integer plantId,
         Integer invId,
         LocalDate from,
         LocalDate to,
@@ -47,10 +48,10 @@ public class InverterServiceImpl implements InverterInterfaceService {
         
 
         Page<InverterHistoryView> result = inverterRepository.findInverterHistory(
-            userId, invId, fromDt, toExclusive, bucketSec, PageRequest.of(safePage, safeSize)
+            userId, plantId, invId, fromDt, toExclusive, bucketSec, PageRequest.of(safePage, safeSize)
         );
         
-        return GetInverterResponseDto.success(result);
+        return GetInverterHistoryResponseDto.success(result);
 
     }
 
