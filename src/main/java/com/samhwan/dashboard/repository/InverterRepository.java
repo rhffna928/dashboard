@@ -35,6 +35,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         FROM (
           SELECT
             i.*,
+            p.plant_name as plantName,
             FROM_UNIXTIME(
               FLOOR(UNIX_TIMESTAMP(i.regdate) / (:bucketSec * 60)) * (:bucketSec * 60)
             ) AS bucketTime,
@@ -46,8 +47,12 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
               ORDER BY i.regdate DESC
             ) AS rn
           FROM inverter i
+          
           JOIN plant_list2 p ON p.plant_id = i.plant_id
+          JOIN inverter_list2 il
+            ON il.inv_id = i.inv_id
           WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
             AND (:invId IS NULL OR i.inv_id = :invId)
             AND i.regdate >= :fromDt
             AND i.regdate <  :toExclusive
@@ -65,6 +70,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           FROM inverter i
           JOIN plant_list2 p ON p.plant_id = i.plant_id
           WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
             AND (:invId IS NULL OR i.inv_id = :invId)
             AND i.regdate >= :fromDt
             AND i.regdate <  :toExclusive
@@ -74,6 +80,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
     )
     Page<InverterHistoryView> findInverterHistory(
         @Param("userId") String userId,
+        @Param("plantId") Integer plantId,
         @Param("invId") Integer invId,
         @Param("fromDt") LocalDateTime fromDt,
         @Param("toExclusive") LocalDateTime toExclusive,
@@ -90,8 +97,8 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           FROM inverter i
           JOIN plant_list2 p ON p.plant_id = i.plant_id
           WHERE p.user_id = :userId
-            AND i.inv_id = :invId
-            AND i.plant_id = :plantId
+            and (:plantId is null or i.plant_id = :plantId)
+            and (:invId is null or i.inv_id = :invId)
             AND i.regdate >= CURDATE()
             AND i.out_power > 0
         ), 0) AS gen_hours,
@@ -101,9 +108,9 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           FROM inverter li
           JOIN plant_list2 p ON p.plant_id = li.plant_id
           WHERE p.user_id = :userId
-            AND li.inv_id = :invId
-            AND li.plant_id = :plantId
-          ORDER BY li.regDate DESC
+          and (:plantId is null or li.plant_id = :plantId)
+          and (:invId is null or li.inv_id = :invId)
+          ORDER BY li.regdate DESC
           LIMIT 1
         ), 0) AS total_gen_kwh,
         /* 3) 월간 생산량(kWh): 이번달(일자별) max(today_gen) 합 */
@@ -114,8 +121,8 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
             FROM inverter i
             JOIN plant_list2 p ON p.plant_id = i.plant_id
             WHERE p.user_id = :userId
-              AND i.inv_id = :invId
-              AND i.plant_id = :plantId
+              and (:plantId is null or i.plant_id = :plantId)
+              and (:invId is null or i.inv_id = :invId)
               AND i.regdate >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
               AND i.regdate <  DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
             GROUP BY DATE(i.regdate)
@@ -127,8 +134,8 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           FROM inverter i
           JOIN plant_list2 p ON p.plant_id = i.plant_id
           WHERE p.user_id = :userId
-            AND i.inv_id = :invId
-            AND i.plant_id = :plantId
+          and (:plantId is null or i.plant_id = :plantId)
+          and (:invId is null or i.inv_id = :invId)
             AND i.regdate >= (CURDATE() - INTERVAL 1 DAY)
             AND i.regdate <  CURDATE()
         ), 0) AS yesterday_gen_kwh,
@@ -138,10 +145,10 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           FROM inverter li
           JOIN plant_list2 p ON p.plant_id = li.plant_id
           WHERE p.user_id = :userId
-          AND li.inv_id = :invId
-          AND li.plant_id = :plantId
+          and (:plantId is null or li.plant_id = :plantId)
+          and (:invId is null or li.inv_id = :invId)
           AND li.regdate >= CURDATE()
-          ORDER BY li.regDate DESC
+          ORDER BY li.regdate DESC
           LIMIT 1
         ), 0) AS today_gen_kwh,
         /* 6) 현재 발전량(kW): 최신행 out_power */
@@ -150,10 +157,10 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           FROM inverter li
           JOIN plant_list2 p ON p.plant_id = li.plant_id
           WHERE p.user_id = :userId
-            AND li.inv_id = :invId
-            AND li.plant_id = :plantId
+          and (:plantId is null or li.plant_id = :plantId)
+          and (:invId is null or li.inv_id = :invId)
           AND li.regdate >= CURDATE()
-          ORDER BY li.regDate DESC
+          ORDER BY li.regdate DESC
           LIMIT 1
         ), 0) AS current_power_kw;
       """, nativeQuery = true)
