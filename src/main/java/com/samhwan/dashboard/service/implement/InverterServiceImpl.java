@@ -2,13 +2,17 @@ package com.samhwan.dashboard.service.implement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.DateTimeException;
+import java.util.List;
  
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetReportResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
@@ -75,7 +79,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
 
 
     @Override
-    public ResponseEntity<? super GetUserHeaderResponseDto> getUserInverterheader(String userId) {
+    public ResponseEntity<? super GetUserHeaderResponseDto> getUserInverterHeader(String userId) {
         try{
             GetUserHeaderResponseDto.InverterHeader inv = inverterRepository.getCurrentPower(userId);
             return GetUserHeaderResponseDto.success(inv);
@@ -84,6 +88,8 @@ public class InverterServiceImpl implements InverterInterfaceService {
             return GetUserHeaderResponseDto.databaseError();
         }
     }
+
+
 
     private String normalizeToAll(String v) {
         if (v == null || v.isBlank()) return "ALL";

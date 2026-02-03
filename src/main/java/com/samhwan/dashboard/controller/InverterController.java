@@ -46,9 +46,10 @@ public class InverterController {
     }
 
 
-    @GetMapping("")
+    @GetMapping("history")
     public ResponseEntity<? super GetInverterResponseDto> getInverterHistory(
         @AuthenticationPrincipal String userId,
+        @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId,
         @RequestParam(name = "from")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @RequestParam(name = "to")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -71,10 +72,10 @@ public class InverterController {
         return inverterInterfaceService.getUserInverterLast(userId,invId,plantId);
     }
     @GetMapping("/header")
-    public ResponseEntity<? super GetUserHeaderResponseDto> getUserInverterheader(
+    public ResponseEntity<? super GetUserHeaderResponseDto> getUserInverterHeader(
         @AuthenticationPrincipal String userId
     ) {
-        return inverterInterfaceService.getUserInverterheader(userId);
+        return inverterInterfaceService.getUserInverterHeader(userId);
     }
 
 }
