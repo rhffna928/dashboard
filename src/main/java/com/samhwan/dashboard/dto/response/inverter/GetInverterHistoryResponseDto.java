@@ -18,7 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class GetInverterResponseDto extends ResponseDto{
+public class GetInverterHistoryResponseDto extends ResponseDto{
 
     
     private final List<InverterSummary> inverters;
@@ -26,18 +26,18 @@ public class GetInverterResponseDto extends ResponseDto{
     private final int totalPages;
     
 
-    private GetInverterResponseDto(List<InverterSummary> inverters, Page<InverterHistoryView> page) {
+    private GetInverterHistoryResponseDto(List<InverterSummary> inverters, Page<InverterHistoryView> page) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.inverters = inverters;
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
         
     }
-    public static ResponseEntity<GetInverterResponseDto> success(Page<InverterHistoryView> page){
+    public static ResponseEntity<GetInverterHistoryResponseDto> success(Page<InverterHistoryView> page){
         List<InverterSummary> list = page.getContent().stream()
                     .map(InverterSummary::fromEntity)
                     .toList();
-        GetInverterResponseDto result =  new GetInverterResponseDto(list, page);
+        GetInverterHistoryResponseDto result =  new GetInverterHistoryResponseDto(list, page);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -72,6 +72,7 @@ public class GetInverterResponseDto extends ResponseDto{
         private LocalDateTime recvTime;
         private LocalDateTime regdate;
         private LocalDateTime bucketTime;
+        private String plantName;
 
         public static InverterSummary fromEntity(InverterHistoryView e) {
             return InverterSummary.builder()
@@ -96,6 +97,7 @@ public class GetInverterResponseDto extends ResponseDto{
                 .recvTime(e.getRecvTime())
                 .regdate(e.getRegdate())
                 .bucketTime(e.getBucketTime())
+                .plantName(e.getPlantName())
                 .build();
         }
     }
