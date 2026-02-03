@@ -47,7 +47,7 @@ public class InverterController {
 
 
     @GetMapping("history")
-    public ResponseEntity<? super GetInverterResponseDto> getInverterHistory(
+    public ResponseEntity<? super GetInverterHistoryResponseDto> getInverterHistory(
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId,
@@ -59,7 +59,7 @@ public class InverterController {
 
     ) {
         System.out.println(bucketSec);
-        return inverterInterfaceService.getInverterHistory(userId, invId, from, to, bucketSec, page, size);
+        return inverterInterfaceService.getInverterHistory(userId,plantId, invId, from, to, bucketSec, page, size);
     }
 
 
