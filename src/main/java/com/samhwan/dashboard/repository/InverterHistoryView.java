@@ -26,6 +26,7 @@ public interface InverterHistoryView  {
     LocalDateTime getRegdate();
     LocalDateTime getRecvTime();
     LocalDateTime getBucketTime();
+    String getPlantName();
 
 }
 
