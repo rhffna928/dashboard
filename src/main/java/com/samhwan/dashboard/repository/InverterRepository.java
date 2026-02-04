@@ -193,7 +193,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           FROM inverter i2
           JOIN plant_list2 p2 ON p2.plant_id = i2.plant_id
           WHERE p2.user_id = :userId
-            AND i2.regdate >= NOW() - INTERVAL 10 MINUTE
+            AND i2.regdate >= NOW() - INTERVAL 1 MINUTE
           GROUP BY i2.plant_id, i2.inv_id
         ) t
           ON t.plant_id = i.plant_id
