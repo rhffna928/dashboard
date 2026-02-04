@@ -90,79 +90,92 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
 
     @Query(value = 
       """
-      SELECT
-        /* 1) 발전 시간(시간): 오늘 out_power>0 인 구간의 최초~최종 regdate 차이 */
-        COALESCE((
-          SELECT ROUND(TIMESTAMPDIFF(MINUTE, MIN(i.regdate), MAX(i.regdate)) / 60, 2)
+        WITH base AS (
+          SELECT i.*
           FROM inverter i
           JOIN plant_list2 p ON p.plant_id = i.plant_id
           WHERE p.user_id = :userId
-            and (:plantId is null or i.plant_id = :plantId)
-            and (:invId is null or i.inv_id = :invId)
-            AND i.regdate >= CURDATE()
-            AND i.out_power > 0
-        ), 0) AS gen_hours,
-        /* 2) 누적 발전량(kWh): 해당 inv 최신행 total_gen */
-        COALESCE((
-          SELECT ROUND(li.total_gen, 1)
-          FROM inverter li
-          JOIN plant_list2 p ON p.plant_id = li.plant_id
-          WHERE p.user_id = :userId
-          and (:plantId is null or li.plant_id = :plantId)
-          and (:invId is null or li.inv_id = :invId)
-          ORDER BY li.regdate DESC
-          LIMIT 1
-        ), 0) AS total_gen_kwh,
-        /* 3) 월간 생산량(kWh): 이번달(일자별) max(today_gen) 합 */
-        COALESCE((
-          SELECT ROUND(SUM(d.daily_max), 1)
-          FROM (
-            SELECT DATE(i.regdate) AS d, MAX(i.today_gen) AS daily_max
-            FROM inverter i
-            JOIN plant_list2 p ON p.plant_id = i.plant_id
-            WHERE p.user_id = :userId
-              and (:plantId is null or i.plant_id = :plantId)
-              and (:invId is null or i.inv_id = :invId)
-              AND i.regdate >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
-              AND i.regdate <  DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
-            GROUP BY DATE(i.regdate)
-          ) d
-        ), 0) AS month_gen_kwh,
-        /* 4) 전일 발전량(kWh): 어제 max(today_gen) */
-        COALESCE((
-          SELECT ROUND(MAX(i.today_gen), 1)
-          FROM inverter i
-          JOIN plant_list2 p ON p.plant_id = i.plant_id
-          WHERE p.user_id = :userId
-          and (:plantId is null or i.plant_id = :plantId)
-          and (:invId is null or i.inv_id = :invId)
-            AND i.regdate >= (CURDATE() - INTERVAL 1 DAY)
-            AND i.regdate <  CURDATE()
-        ), 0) AS yesterday_gen_kwh,
-        /* 5) 금일 발전량(kWh): 최신행 today_gen */
-        COALESCE((
-          SELECT ROUND(li.today_gen, 1)
-          FROM inverter li
-          JOIN plant_list2 p ON p.plant_id = li.plant_id
-          WHERE p.user_id = :userId
-          and (:plantId is null or li.plant_id = :plantId)
-          and (:invId is null or li.inv_id = :invId)
-          AND li.regdate >= CURDATE()
-          ORDER BY li.regdate DESC
-          LIMIT 1
-        ), 0) AS today_gen_kwh,
-        /* 6) 현재 발전량(kW): 최신행 out_power */
-        COALESCE((
-          SELECT ROUND(li.out_power, 1)
-          FROM inverter li
-          JOIN plant_list2 p ON p.plant_id = li.plant_id
-          WHERE p.user_id = :userId
-          and (:plantId is null or li.plant_id = :plantId)
-          and (:invId is null or li.inv_id = :invId)
-          AND li.regdate >= CURDATE()
-          ORDER BY li.regdate DESC
-          LIMIT 1
-        ), 0) AS current_power_kw;
+          AND (:plantId IS NULL OR i.plant_id = :plantId)
+          AND (:invId IS NULL OR i.inv_id = :invId)
+        ),
+        --  전체 누적(total_gen): "인버터별 최신행"을 찾아 SUM
+        last_any AS (
+          SELECT b.plant_id, b.inv_id, MAX(b.regdate) AS max_regdate
+          FROM base b
+          GROUP BY b.plant_id, b.inv_id
+        ),
+        last_rows AS (
+          SELECT b.*
+          FROM base b
+          JOIN last_any l
+            ON l.plant_id = b.plant_id
+          AND l.inv_id   = b.inv_id
+          AND l.max_regdate = b.regdate
+        ),
+        --  오늘 기준 최신행(금일 발전량/현재 발전량)
+        today_base AS (
+          SELECT b.*
+          FROM base b
+          WHERE b.regdate >= CURDATE()
+        ),
+        today_last_any AS (
+          SELECT tb.plant_id, tb.inv_id, MAX(tb.regdate) AS max_regdate
+          FROM today_base tb
+          GROUP BY tb.plant_id, tb.inv_id
+        ),
+        today_last_rows AS (
+          SELECT tb.*
+          FROM today_base tb
+          JOIN today_last_any l
+            ON l.plant_id = tb.plant_id
+          AND l.inv_id   = tb.inv_id
+          AND l.max_regdate = tb.regdate
+        ),
+        --  월간: "일자+인버터" 단위로 MAX(today_gen) → 합
+        month_daily_max AS (
+          SELECT DATE(b.regdate) AS d, b.plant_id, b.inv_id, MAX(b.today_gen) AS daily_max
+          FROM base b
+          WHERE b.regdate >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            AND b.regdate <  DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
+          GROUP BY DATE(b.regdate), b.plant_id, b.inv_id
+        ),
+        --  전일: 인버터별 MAX(today_gen) → 합
+        yesterday_per_inv AS (
+          SELECT b.plant_id, b.inv_id, MAX(b.today_gen) AS y_max
+          FROM base b
+          WHERE b.regdate >= (CURDATE() - INTERVAL 1 DAY)
+            AND b.regdate <  CURDATE()
+          GROUP BY b.plant_id, b.inv_id
+        ),
+        --  발전시간: 오늘 out_power>0 구간의 min~max (네 기존 해석 유지)
+        today_on AS (
+          SELECT MIN(tb.regdate) AS min_reg, MAX(tb.regdate) AS max_reg
+          FROM today_base tb
+          WHERE tb.out_power > 0
+        )
+        SELECT
+          /* 1) 발전 시간(시간) */
+          COALESCE(
+            ROUND(
+              TIMESTAMPDIFF(
+                MINUTE,
+                (SELECT min_reg FROM today_on),
+                (SELECT max_reg FROM today_on)
+              ) / 60, 2
+            ),
+            0
+          ) AS gen_hours,
+          /* 2) 누적 발전량(kWh): 인버터별 최신행 total_gen 합 */
+          COALESCE((SELECT ROUND(SUM(lr.total_gen), 1) FROM last_rows lr), 0) AS total_gen_kwh,
+          /* 3) 월간 생산량(kWh): (일자+인버터)별 MAX(today_gen) 합 */
+          COALESCE((SELECT ROUND(SUM(m.daily_max), 1) FROM month_daily_max m), 0) AS month_gen_kwh,
+          /* 4) 전일 발전량(kWh): 인버터별 MAX(today_gen) 합 */
+          COALESCE((SELECT ROUND(SUM(y.y_max), 1) FROM yesterday_per_inv y), 0) AS yesterday_gen_kwh,
+          /* 5) 금일 발전량(kWh): 오늘 인버터별 최신행 today_gen 합 */
+          COALESCE((SELECT ROUND(SUM(tlr.today_gen), 1) FROM today_last_rows tlr), 0) AS today_gen_kwh,
+          /* 6) 현재 발전량(kW): 오늘 인버터별 최신행 out_power 합 */
+          COALESCE((SELECT ROUND(SUM(tlr.out_power), 1) FROM today_last_rows tlr), 0) AS current_power_kw
+        ;
       """, nativeQuery = true)
     Optional<DashboardKpiView> findLatestByUserIdAndInvId(
         @Param("userId") String userId,
