@@ -10,11 +10,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtProvider {
 
@@ -53,8 +59,17 @@ public class JwtProvider {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-        }catch(Exception exception){
-            exception.printStackTrace();
+        }catch(ExpiredJwtException  e){
+            log.debug("JWT expired. exp={}, now={}", e.getClaims().getExpiration(), new java.util.Date());
+            return null;
+        }catch (UnsupportedJwtException | MalformedJwtException | SecurityException | IllegalArgumentException e) {
+            // 위조/깨짐/형식오류: 필요하면 warn 한 줄
+            log.warn("Invalid JWT: {}", e.getClass().getSimpleName());
+            return null;
+
+        } catch (JwtException e) {
+            // 그 외 JWT 파싱 관련 예외
+            log.warn("JWT parse error: {}", e.getClass().getSimpleName());
             return null;
         }
         return claims.getSubject();
