@@ -1,4 +1,4 @@
-package com.samhwan.dashboard.dto.response.inverter;
+package com.samhwan.dashboard.dto.response.inverter_list;
 
 import java.util.List;
 

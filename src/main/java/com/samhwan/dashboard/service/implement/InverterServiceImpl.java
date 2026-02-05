@@ -14,7 +14,11 @@ import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetInverterHistoryResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetReportResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterKpiResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto.InverterLatestRow;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto.SeriesPoint;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.repository.DashboardKpiView;
 import com.samhwan.dashboard.repository.InverterHistoryView;
@@ -57,12 +61,12 @@ public class InverterServiceImpl implements InverterInterfaceService {
 
 
     @Override
-    public ResponseEntity<? super GetUserInverterResponseDto> getUserInverterLast(
+    public ResponseEntity<? super GetUserInverterKpiResponseDto> getUserInverterLast(
         String userId, Integer invId, Integer plantId) {
         try{
             DashboardKpiView v = inverterRepository.findLatestByUserIdAndInvId(userId, invId,plantId).orElse(null);
-            GetUserInverterResponseDto.DashboardKpi kpi =
-                GetUserInverterResponseDto.DashboardKpi.builder()
+            GetUserInverterKpiResponseDto.DashboardKpi kpi =
+                GetUserInverterKpiResponseDto.DashboardKpi.builder()
                     .genHours(v.getGenHours())
                     .totalGenKwh(v.getTotalGenKwh())
                     .monthGenKwh(v.getMonthGenKwh())
@@ -70,10 +74,10 @@ public class InverterServiceImpl implements InverterInterfaceService {
                     .todayGenKwh(v.getTodayGenKwh())
                     .currentPowerKw(v.getCurrentPowerKw())
                     .build();
-            return GetUserInverterResponseDto.success(kpi);
+            return GetUserInverterKpiResponseDto.success(kpi);
         }catch(Exception e){
             e.printStackTrace();
-            return GetUserInverterResponseDto.databaseError();
+            return GetUserInverterKpiResponseDto.databaseError();
 
         }
     }
@@ -91,6 +95,38 @@ public class InverterServiceImpl implements InverterInterfaceService {
     }
 
 
+    @Override
+    public ResponseEntity<? super GetUserInverterLatestListResponseDto> getLatestList(
+        String userId,
+        Integer plantId,
+        Integer invId
+    ) {
+        try{
+            List<InverterLatestRow> list = inverterRepository.getLatestList(userId,plantId,invId);
+            return GetUserInverterLatestListResponseDto.success(list);
+        }catch(Exception e){
+            e.printStackTrace();
+            return GetUserInverterLatestListResponseDto.databaseError();
+        }
+
+    }
+
+
+    @Override
+    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getRecentSeries(
+        String userId,
+        Integer plantId,
+        Integer invId
+    ) {
+       try{
+            List<SeriesPoint> list = inverterRepository.getRecentSeries(userId,plantId,invId);
+            return GetUserInverterSeriesResponseDto.success(list);
+        }catch(Exception e){
+            e.printStackTrace();
+            return GetUserInverterSeriesResponseDto.databaseError();
+        }
+    }
+
 
     private String normalizeToAll(String v) {
         if (v == null || v.isBlank()) return "ALL";
@@ -102,6 +138,9 @@ public class InverterServiceImpl implements InverterInterfaceService {
         if (value > max) return max;
         return value;
     }
+
+
+
 
 
     

@@ -4,11 +4,11 @@ import org.springframework.http.ResponseEntity;
 
 import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
 import com.samhwan.dashboard.dto.request.inverter.UpdateInverterListRequestDto;
-import com.samhwan.dashboard.dto.response.inverter.CreateInverterResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.UpdateInverterListResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.DeleteInverterListResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetInverterList2ResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterList2ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter_list.CreateInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter_list.DeleteInverterListResponseDto;
+import com.samhwan.dashboard.dto.response.inverter_list.GetInverterList2ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter_list.GetUserInverterList2ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter_list.UpdateInverterListResponseDto;
 
 
 public interface InverterList2Service {

@@ -1,4 +1,4 @@
-package com.samhwan.dashboard.dto.response.inverter;
+package com.samhwan.dashboard.dto.response.inverter_list;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

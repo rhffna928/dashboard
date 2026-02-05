@@ -1,6 +1,8 @@
 package com.samhwan.dashboard.repository;
 
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto.InverterLatestRow;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto.SeriesPoint;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.entity.InverterList2;
 
@@ -201,6 +203,85 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         AND t.max_regdate = i.regdate;
         """, nativeQuery = true)    
     GetUserHeaderResponseDto.InverterHeader getCurrentPower(@Param("userId") String userId);
+
+
+    @Query(value="""
+      WITH base AS (
+        SELECT i.*
+        FROM inverter i
+        JOIN plant_list2 p ON p.plant_id = i.plant_id
+        WHERE p.user_id = :userId
+          AND (: plantId IS NULL OR i.plant_id = : plantId)
+          AND (: invId IS NULL OR i.inv_id = : invId)
+      ),
+      last_any AS (
+        SELECT b.plant_id, b.inv_id, MAX(b.regdate) AS max_regdate
+        FROM base b
+        GROUP BY b.plant_id, b.inv_id
+      )
+      SELECT
+        b.*
+      FROM base b
+      JOIN last_any l
+        ON l.plant_id = b.plant_id
+      AND l.inv_id   = b.inv_id
+      AND l.max_regdate = b.regdate
+      ORDER BY b.plant_id, b.inv_id
+    """, nativeQuery = true)
+    List<InverterLatestRow> getLatestList(String userId, Integer plantId, Integer invId);
+
+
+    @Query(value = """
+        WITH RECURSIVE hours AS (
+          /* 최근 24시간: 현재시각 기준으로 23시간 전 ~ 현재 시간 */
+          SELECT DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 23 HOUR), '%Y-%m-%d %H:00:00') AS bucket_hour
+          UNION ALL
+          SELECT DATE_FORMAT(DATE_ADD(bucket_hour, INTERVAL 1 HOUR), '%Y-%m-%d %H:00:00')
+          FROM hours
+          WHERE bucket_hour < DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00')
+        ),
+        series AS (
+          SELECT DISTINCT i.plant_id, i.inv_id
+          FROM inverter i
+          JOIN plant_list2 p ON p.plant_id = i.plant_id
+          WHERE p.user_id = : userId
+            AND (: plantId IS NULL OR i.plant_id = :plantId)
+            AND (: invId   IS NULL OR i.inv_id   = :invId)
+        ),
+        agg AS (
+          SELECT
+            DATE_FORMAT(i.regdate, '%Y-%m-%d %H:00:00') AS bucket_hour,
+            i.plant_id,
+            i.inv_id,
+            ROUND(i.today_gen,1) AS hour_gen_kwh,
+            COUNT(*) AS samples
+          FROM inverter i
+          JOIN plant_list2 p ON p.plant_id = i.plant_id
+          WHERE p.user_id = : userId
+            AND (: plantId IS NULL OR i.plant_id = : plantId)
+            AND (: invId   IS NULL OR i.inv_id   = : invId)
+            AND i.regdate >= NOW() - INTERVAL 24 HOUR
+          GROUP BY
+            DATE_FORMAT(i.regdate, '%Y-%m-%d %H'),
+            i.plant_id,
+            i.inv_id
+        )
+        SELECT
+          h.bucket_hour,
+          s.plant_id,
+          s.inv_id,
+          COALESCE(a.hour_gen_kwh, 0) AS hour_gen_kwh,
+          COALESCE(a.samples, 0)      AS samples
+        FROM hours h
+        CROSS JOIN series s
+        LEFT JOIN agg a
+          ON a.bucket_hour = h.bucket_hour
+        AND a.plant_id    = s.plant_id
+        AND a.inv_id      = s.inv_id
+        ORDER BY h.bucket_hour ASC, s.plant_id ASC, s.inv_id ASC;
+
+        """,nativeQuery= true)
+    List<SeriesPoint> getRecentSeries(String userId, Integer plantId, Integer invId);
 
 
 

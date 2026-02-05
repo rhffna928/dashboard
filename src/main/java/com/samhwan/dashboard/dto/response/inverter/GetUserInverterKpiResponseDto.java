@@ -1,7 +1,5 @@
 package com.samhwan.dashboard.dto.response.inverter;
 
-import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,25 +7,24 @@ import org.springframework.http.ResponseEntity;
 import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.entity.Inverter;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class GetUserInverterResponseDto extends ResponseDto{
+public class GetUserInverterKpiResponseDto extends ResponseDto{
 
 
     private final DashboardKpi kpi;
 
-    private GetUserInverterResponseDto(DashboardKpi kpi) {
+    private GetUserInverterKpiResponseDto(DashboardKpi kpi) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.kpi = kpi;
         
     }
-    public static ResponseEntity<GetUserInverterResponseDto> success(DashboardKpi kpi){
+    public static ResponseEntity<GetUserInverterKpiResponseDto> success(DashboardKpi kpi){
         
-        GetUserInverterResponseDto result =  new GetUserInverterResponseDto(kpi);
+        GetUserInverterKpiResponseDto result =  new GetUserInverterKpiResponseDto(kpi);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

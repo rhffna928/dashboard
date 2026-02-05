@@ -21,12 +21,26 @@ public class InverterController {
 
     private final InverterService inverterService;
     private final InverterInterfaceService inverterInterfaceService;
-    // 발전소별 인버터 목록(최신 데이터들)
-    @GetMapping("/plant/{plantId}")
-    public List<Inverter> getInvertersByPlant(@PathVariable("plantId") Integer plantId) {
-        return inverterService.getLatestByPlant(plantId);
+    
+
+    @GetMapping("/lastest")
+    public ResponseEntity<? super GetUserInverterLatestListResponseDto> getLatestList(
+        @AuthenticationPrincipal String userId,
+        @RequestParam(name = "plantId", required = false) Integer plantId,
+        @RequestParam(name = "invId", required = false) Integer invId
+    ) {
+        return InverterInterfaceService.getLatestList(userId, plantId, invId);
     }
 
+    @GetMapping("/series/recent")
+    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getRecentSeries(
+        @AuthenticationPrincipal String userId,
+        @RequestParam(name = "plantId", required = false) Integer plantId,
+        @RequestParam(name = "invId", required = false) Integer invId
+    ) {
+        return InverterInterfaceService.getRecentSeries(userId, plantId, invId);
+    }
+    
     // 그래프용(오늘 시계열)
     @GetMapping("/plant/{plantId}/inv/{invId}/today")
     public List<Inverter> getTodaySeries(
@@ -63,8 +77,8 @@ public class InverterController {
     }
 
 
-    @GetMapping("/usr")
-    public ResponseEntity<? super GetUserInverterResponseDto> getUserInverterLast(
+    @GetMapping("/kpi")
+    public ResponseEntity<? super GetUserInverterKpiResponseDto> getUserInverterLast(
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "invId", required = false) Integer invId,
         @RequestParam(name = "plantId", required = false) Integer plantId
