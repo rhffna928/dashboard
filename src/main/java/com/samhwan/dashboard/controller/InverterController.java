@@ -29,7 +29,7 @@ public class InverterController {
         @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId
     ) {
-        return InverterInterfaceService.getLatestList(userId, plantId, invId);
+        return inverterInterfaceService.getLatestList(userId, plantId, invId);
     }
 
     @GetMapping("/series/recent")
@@ -38,7 +38,7 @@ public class InverterController {
         @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId
     ) {
-        return InverterInterfaceService.getRecentSeries(userId, plantId, invId);
+        return inverterInterfaceService.getRecentSeries(userId, plantId, invId);
     }
     
     // 그래프용(오늘 시계열)

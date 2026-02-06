@@ -10,19 +10,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetInverterHistoryResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetReportResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterKpiResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto.InverterLatestRow;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto.SeriesPoint;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto.InverterView;
 import com.samhwan.dashboard.entity.Inverter;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto;
 import com.samhwan.dashboard.repository.DashboardKpiView;
 import com.samhwan.dashboard.repository.InverterHistoryView;
+import com.samhwan.dashboard.repository.InverterLastListView;
 import com.samhwan.dashboard.repository.InverterRepository;
+import com.samhwan.dashboard.repository.InverterSeriesRow;
 import com.samhwan.dashboard.service.InverterInterfaceService;
 
 import lombok.RequiredArgsConstructor;
@@ -102,7 +102,11 @@ public class InverterServiceImpl implements InverterInterfaceService {
         Integer invId
     ) {
         try{
-            List<InverterLatestRow> list = inverterRepository.getLatestList(userId,plantId,invId);
+            List<Inverter> rows = inverterRepository.getLatestList(userId,plantId,invId);
+            List<GetUserInverterLatestListResponseDto.InverterLatestRow> list =
+                rows.stream()
+                .map(GetUserInverterLatestListResponseDto.InverterLatestRow::fromEntity)
+                .toList();
             return GetUserInverterLatestListResponseDto.success(list);
         }catch(Exception e){
             e.printStackTrace();
@@ -119,7 +123,17 @@ public class InverterServiceImpl implements InverterInterfaceService {
         Integer invId
     ) {
        try{
-            List<SeriesPoint> list = inverterRepository.getRecentSeries(userId,plantId,invId);
+            List<InverterSeriesRow> rows = inverterRepository.getRecentSeries(userId,plantId,invId);
+            List<GetUserInverterSeriesResponseDto.InverterView> list =
+                rows.stream()
+                    .map(r -> GetUserInverterSeriesResponseDto.InverterView.builder()
+                        .bucketHour(r.getBucketHour())
+                        .plantId(r.getPlantId())
+                        .invId(r.getInvId())
+                        .hourGenKwh(r.getHourGenKwh())
+                        .samples(r.getSamples())
+                        .build())
+                    .toList();
             return GetUserInverterSeriesResponseDto.success(list);
         }catch(Exception e){
             e.printStackTrace();

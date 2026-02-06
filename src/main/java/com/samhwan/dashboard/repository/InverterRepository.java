@@ -2,9 +2,8 @@ package com.samhwan.dashboard.repository;
 
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto.InverterLatestRow;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto.SeriesPoint;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto.InverterView;
 import com.samhwan.dashboard.entity.Inverter;
-import com.samhwan.dashboard.entity.InverterList2;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public interface InverterRepository extends JpaRepository<Inverter, Integer> {
@@ -211,8 +209,8 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         FROM inverter i
         JOIN plant_list2 p ON p.plant_id = i.plant_id
         WHERE p.user_id = :userId
-          AND (: plantId IS NULL OR i.plant_id = : plantId)
-          AND (: invId IS NULL OR i.inv_id = : invId)
+          AND (:plantId IS NULL OR i.plant_id = :plantId)
+          AND (:invId IS NULL OR i.inv_id = :invId)
       ),
       last_any AS (
         SELECT b.plant_id, b.inv_id, MAX(b.regdate) AS max_regdate
@@ -228,7 +226,11 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
       AND l.max_regdate = b.regdate
       ORDER BY b.plant_id, b.inv_id
     """, nativeQuery = true)
-    List<InverterLatestRow> getLatestList(String userId, Integer plantId, Integer invId);
+    List<Inverter> getLatestList(
+      @Param("userId") String userId,
+      @Param("invId") Integer invId,
+      @Param("plantId") Integer plantId
+    );
 
 
     @Query(value = """
@@ -244,9 +246,9 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
           SELECT DISTINCT i.plant_id, i.inv_id
           FROM inverter i
           JOIN plant_list2 p ON p.plant_id = i.plant_id
-          WHERE p.user_id = : userId
-            AND (: plantId IS NULL OR i.plant_id = :plantId)
-            AND (: invId   IS NULL OR i.inv_id   = :invId)
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
         ),
         agg AS (
           SELECT
@@ -257,9 +259,9 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
             COUNT(*) AS samples
           FROM inverter i
           JOIN plant_list2 p ON p.plant_id = i.plant_id
-          WHERE p.user_id = : userId
-            AND (: plantId IS NULL OR i.plant_id = : plantId)
-            AND (: invId   IS NULL OR i.inv_id   = : invId)
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
             AND i.regdate >= NOW() - INTERVAL 24 HOUR
           GROUP BY
             DATE_FORMAT(i.regdate, '%Y-%m-%d %H'),
@@ -281,7 +283,12 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
         ORDER BY h.bucket_hour ASC, s.plant_id ASC, s.inv_id ASC;
 
         """,nativeQuery= true)
-    List<SeriesPoint> getRecentSeries(String userId, Integer plantId, Integer invId);
+    List<InverterSeriesRow> getRecentSeries(
+      @Param("userId") String userId,
+      @Param("plantId") Integer plantId,
+      @Param("invId") Integer invId
+      
+    );
 
 
 

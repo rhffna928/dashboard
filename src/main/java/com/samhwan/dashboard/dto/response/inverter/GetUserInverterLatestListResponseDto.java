@@ -13,6 +13,7 @@ import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto.InverterLatestRow;
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.repository.InverterHistoryView;
+import com.samhwan.dashboard.repository.InverterLastListView;
 
 import lombok.Builder;
 import lombok.Getter;
