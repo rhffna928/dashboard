@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.samhwan.dashboard.dto.request.plant.CreatePlantRequestDto;
 import com.samhwan.dashboard.dto.request.plant.PlantUpdateRequestDto;
-import com.samhwan.dashboard.dto.request.plant.UpdatePlantRequestDto;
+import com.samhwan.dashboard.dto.request.plant.UpdatePlantListRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -137,7 +137,7 @@ public class PlantList2 {
     }
 
  
-    public void updateFrom(UpdatePlantRequestDto dto) {
+    public void updateFrom(UpdatePlantListRequestDto dto) {
         // plantId, regdate는 수정 대상 아님
         this.plantCode = dto.getPlantCode();
         this.plantName = dto.getPlantName();

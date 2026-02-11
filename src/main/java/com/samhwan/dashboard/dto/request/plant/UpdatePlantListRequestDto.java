@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UpdatePlantRequestDto {
+public class UpdatePlantListRequestDto {
 
     private Integer plantCode;
     private String plantName;

@@ -1,16 +1,14 @@
-package com.samhwan.dashboard.dto.response.plant;
+package com.samhwan.dashboard.dto.response.plant_list;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.entity.PlantList2;
 
 import lombok.Builder;
