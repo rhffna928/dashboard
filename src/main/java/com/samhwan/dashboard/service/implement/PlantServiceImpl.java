@@ -5,14 +5,12 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
 import com.samhwan.dashboard.dto.request.plant_list.CreatePlantListRequestDto;
 import com.samhwan.dashboard.dto.request.plant_list.UpdatePlantListRequestDto;
 import com.samhwan.dashboard.dto.response.ResponseDto;
 import com.samhwan.dashboard.dto.response.inverter_list.CreateInverterResponseDto;
 import com.samhwan.dashboard.dto.response.inverter_list.DeleteInverterListResponseDto;
 import com.samhwan.dashboard.dto.response.plant_list.*;
-import com.samhwan.dashboard.entity.InverterList2;
 import com.samhwan.dashboard.entity.PlantList2;
 import com.samhwan.dashboard.entity.User2;
 import com.samhwan.dashboard.repository.AdminRepository;
