@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 import com.samhwan.dashboard.dto.request.plant.CreatePlantRequestDto;
 import com.samhwan.dashboard.dto.request.plant.PlantUpdateRequestDto;
-import com.samhwan.dashboard.dto.request.plant.UpdatePlantListRequestDto;
+import com.samhwan.dashboard.dto.request.plant_list.CreatePlantListRequestDto;
+import com.samhwan.dashboard.dto.request.plant_list.UpdatePlantListRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -105,7 +106,7 @@ public class PlantList2 {
     private LocalDateTime regdate;
 
     @Builder
-    public PlantList2(CreatePlantRequestDto dto) {
+    public PlantList2(CreatePlantListRequestDto dto) {
         this.plantCode = dto.getPlantCode();
         this.plantName = dto.getPlantName();
         this.plantOwner = dto.getPlantOwner();

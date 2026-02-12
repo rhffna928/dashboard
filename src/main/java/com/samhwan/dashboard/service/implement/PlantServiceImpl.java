@@ -5,10 +5,14 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.samhwan.dashboard.dto.request.plant.UpdatePlantListRequestDto;
-import com.samhwan.dashboard.dto.response.plant_list.GetPlantList2ResponseDto;
-import com.samhwan.dashboard.dto.response.plant_list.GetUserPlantList2ResponseDto;
-import com.samhwan.dashboard.dto.response.plant_list.UpdatePlantListResponseDto;
+import com.samhwan.dashboard.dto.request.inverter.CreateInverterRequestDto;
+import com.samhwan.dashboard.dto.request.plant_list.CreatePlantListRequestDto;
+import com.samhwan.dashboard.dto.request.plant_list.UpdatePlantListRequestDto;
+import com.samhwan.dashboard.dto.response.ResponseDto;
+import com.samhwan.dashboard.dto.response.inverter_list.CreateInverterResponseDto;
+import com.samhwan.dashboard.dto.response.inverter_list.DeleteInverterListResponseDto;
+import com.samhwan.dashboard.dto.response.plant_list.*;
+import com.samhwan.dashboard.entity.InverterList2;
 import com.samhwan.dashboard.entity.PlantList2;
 import com.samhwan.dashboard.entity.User2;
 import com.samhwan.dashboard.repository.AdminRepository;
@@ -56,6 +60,28 @@ public class PlantServiceImpl implements PlantInterfaceService {
 
     @Transactional
     @Override
+    public ResponseEntity<? super CreatePlantListResponseDto> createPlantList(
+        String currentUserId,
+        CreatePlantListRequestDto req) {
+           
+        try{
+            String plantName = req.getPlantName();
+            
+            System.out.println(req);
+            boolean exexistsByName = plantList2Repository.existsByPlantName(plantName);
+            if(exexistsByName) return CreateInverterResponseDto.duplicateId();
+            PlantList2 plantList2 = new PlantList2(req);
+
+            plantList2Repository.save(plantList2);
+
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return CreatePlantListResponseDto.success();
+    }
+    @Transactional
+    @Override
     public ResponseEntity<? super UpdatePlantListResponseDto> updatePlantList(String currentUserId, Integer id,
             UpdatePlantListRequestDto req) {
         User2 currentUser = adminRepository.findByUserId(currentUserId).orElse(null);
@@ -65,8 +91,20 @@ public class PlantServiceImpl implements PlantInterfaceService {
         return UpdatePlantListResponseDto.success();
     }
 
-    
-
-   
-
+    @Transactional
+    @Override
+    public ResponseEntity<? super DeletePlantListResponseDto> deletePlant(String currentUserId, Integer id
+        ) {
+        try{
+            User2 currentUser = adminRepository.findByUserId(currentUserId).orElse(null);
+            if(!isAdmin(currentUser)) return DeletePlantListResponseDto.permit();
+            PlantList2 target = plantList2Repository.findById(id).orElse(null);
+            if (target == null) return DeleteInverterListResponseDto.notExistUser();
+            plantList2Repository.delete(target);
+            return DeletePlantListResponseDto.success(id);
+        }catch(Exception e){
+            e.printStackTrace();
+            return DeletePlantListResponseDto.databaseError();
+        }
+    }
 }

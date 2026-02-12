@@ -1,4 +1,4 @@
-package com.samhwan.dashboard.dto.request.plant;
+package com.samhwan.dashboard.dto.request.plant_list;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UpdatePlantListRequestDto {
+public class CreatePlantListRequestDto {
 
     private Integer plantCode;
     private String plantName;

@@ -22,4 +22,5 @@ public interface PlantList2Repository extends JpaRepository<PlantList2, Integer>
 
     List<PlantList2> findAllByUserId(String userId);
 
+    boolean existsByPlantName(String plantName);
 }

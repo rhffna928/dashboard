@@ -29,5 +29,9 @@ public class DeletePlantListResponseDto extends ResponseDto{
         ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_USER, ResponseMessage.NOT_EXISTED_USER);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
     }
+    public static ResponseEntity<ResponseDto> permit(){
+        ResponseDto result = new ResponseDto(ResponseCode.NO_PERMISSION, ResponseMessage.NO_PERMISSION);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(result);
+    }
 
 }
