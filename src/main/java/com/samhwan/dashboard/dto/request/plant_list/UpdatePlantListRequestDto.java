@@ -1,5 +1,6 @@
 package com.samhwan.dashboard.dto.request.plant_list;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdatePlantListRequestDto {
 
+    @NotNull
     private Integer plantCode;
+    @NotNull
     private String plantName;
     private String plantOwner;
     private String plantMan;
