@@ -8,9 +8,12 @@ import org.springframework.http.ResponseEntity;
 import com.samhwan.dashboard.dto.response.inverter.GetInverterHistoryResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetReportResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterDailyResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterMonthlyResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterKpiResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.GetUserInverterYearlyResponseDto;
 import com.samhwan.dashboard.entity.Inverter;
 
 
@@ -41,4 +44,17 @@ public interface InverterInterfaceService {
                 Integer plantId,
                 Integer invId
         );
+
+        ResponseEntity<? super GetUserInverterDailyResponseDto> getDaily(
+                String userId, Integer plantId, Integer invId, String targetDate
+        );
+
+        ResponseEntity<? super GetUserInverterMonthlyResponseDto> getMonthly(
+                String userId, Integer plantId, Integer invId, LocalDate targetYearMonth
+        );
+
+        ResponseEntity<? super GetUserInverterYearlyResponseDto> getYearly(
+                String userId, Integer plantId, Integer invId, LocalDate targetYear
+        );
+
 }

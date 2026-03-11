@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -344,7 +345,8 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
     List<InverterDailyRow> getInverterDailyRows(
       @Param("userId") String userId,
       @Param("plantId") Integer plantId,
-      @Param("invId") Integer invId
+      @Param("invId") Integer invId,
+      @Param("targetDate") String targetDate
     );
     
 
@@ -403,7 +405,8 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
     List<InverterMonthlyRow> getInverterMonthlyRows(
       @Param("userId") String userId,
       @Param("plantId") Integer plantId,
-      @Param("invId") Integer invId
+      @Param("invId") Integer invId,
+      @Param("targetYearMonth") LocalDate targetYearMonth
     );
 
 
@@ -461,7 +464,8 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
     List<InverterYearlyRow> getInverterYearlyRows(
       @Param("userId") String userId,
       @Param("plantId") Integer plantId,
-      @Param("invId") Integer invId
+      @Param("invId") Integer invId,
+      @Param("targetYear") LocalDate targetYear
     );
 
 

@@ -43,31 +43,35 @@ public class InverterController {
 
     //보고서 페이지
     @GetMapping("/daily")
-    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getDaily(
+    public ResponseEntity<? super GetUserInverterDailyResponseDto> getDaily(
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "plantId", required = false) Integer plantId,
-        @RequestParam(name = "invId", required = false) Integer invId
+        @RequestParam(name = "invId", required = false) Integer invId,
+        @RequestParam(name = "targetDate")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String targetDate
     ) {
-        return inverterInterfaceService.getDaily(userId, plantId, invId);
+        System.out.println(targetDate);
+        return inverterInterfaceService.getDaily(userId, plantId, invId,targetDate);
     }
 
     //보고서 페이지
     @GetMapping("/monthly")
-    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getMonthly(
+    public ResponseEntity<? super GetUserInverterMonthlyResponseDto> getMonthly(
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "plantId", required = false) Integer plantId,
-        @RequestParam(name = "invId", required = false) Integer invId
+        @RequestParam(name = "invId", required = false) Integer invId,
+        @RequestParam(name = "targetYearMonth")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate targetYearMonth
     ) {
-        return inverterInterfaceService.getMonthly(userId, plantId, invId);
+        return inverterInterfaceService.getMonthly(userId, plantId, invId,targetYearMonth);
     }
     //보고서 페이지
     @GetMapping("/yearly")
-    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getYearly(
+    public ResponseEntity<? super GetUserInverterYearlyResponseDto> getYearly(
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "plantId", required = false) Integer plantId,
-        @RequestParam(name = "invId", required = false) Integer invId
+        @RequestParam(name = "invId", required = false) Integer invId,
+        @RequestParam(name = "targetYear")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate targetYear
     ) {
-        return inverterInterfaceService.getYearly(userId, plantId, invId);
+        return inverterInterfaceService.getYearly(userId, plantId, invId,targetYear);
     }
 
     

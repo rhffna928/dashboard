@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.entity.Inverter;
+import com.samhwan.dashboard.repository.InverterDailyRow;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -17,34 +17,36 @@ import lombok.Getter;
 @Getter
 public class GetUserInverterDailyResponseDto extends ResponseDto {
 
-  private final List<InverterView> series;
+  private final List<InverterDailyRow> day;
 
-  private GetUserInverterDailyResponseDto(List<InverterView> series) {
+  private GetUserInverterDailyResponseDto(List<InverterDailyRow> day) {
     super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-    this.series = series;
+    this.day = day;
   }
 
-  public static ResponseEntity<GetUserInverterDailyResponseDto> success(List<InverterView> series) {
-    return ResponseEntity.status(HttpStatus.OK).body(new GetUserInverterDailyResponseDto(series));
+  public static ResponseEntity<GetUserInverterDailyResponseDto> success(List<InverterDailyRow> day) {
+    return ResponseEntity.status(HttpStatus.OK).body(new GetUserInverterDailyResponseDto(day));
   }
 
-    @Getter
-    @Builder
-    public static class InverterView{
-
-    private final String bucketHour;
-    private final Long plantId;
-    private final Long invId;
-    private final Double hourGenKwh;
-    private final Long samples;
-        public InverterView( String bucketHour,Long plantId,
-          Long invId,Double hourGenKwh, Long samples
-        ) {
-            this.bucketHour = bucketHour;
-            this.plantId = plantId;
-            this.invId = invId;
-            this.hourGenKwh = hourGenKwh;
-            this.samples = samples;
-        }
+  @Getter
+  @Builder
+  public static class InverterDailyRow{
+ 
+  private final Long hour;
+  private final Long plantId;
+  private final Long invId;
+  private final Double totalValue;
+  private final Long samples;
+    public InverterDailyRow( Long hour,Long plantId,
+      Long invId,Double totalValue, Long samples
+    ) {
+        this.hour = hour;
+        this.plantId = plantId;
+        this.invId = invId;
+        this.totalValue = totalValue;
+        this.samples = samples;
     }
+  }
+
+
 }

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import com.samhwan.dashboard.common.ResponseCode;
 import com.samhwan.dashboard.common.ResponseMessage;
 import com.samhwan.dashboard.dto.response.ResponseDto;
-import com.samhwan.dashboard.entity.Inverter;
+import com.samhwan.dashboard.repository.InverterMonthlyRow;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -17,34 +17,34 @@ import lombok.Getter;
 @Getter
 public class GetUserInverterMonthlyResponseDto extends ResponseDto {
 
-  private final List<InverterView> series;
+  private final List<InverterMonthlyRow> monthly;
 
-  private GetUserInverterMonthlyResponseDto(List<InverterView> series) {
+  private GetUserInverterMonthlyResponseDto(List<InverterMonthlyRow> monthly) {
     super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-    this.series = series;
+    this.monthly = monthly;
   }
 
-  public static ResponseEntity<GetUserInverterMonthlyResponseDto> success(List<InverterView> series) {
-    return ResponseEntity.status(HttpStatus.OK).body(new GetUserInverterMonthlyResponseDto(series));
+  public static ResponseEntity<GetUserInverterMonthlyResponseDto> success(List<InverterMonthlyRow> rows) {
+    return ResponseEntity.status(HttpStatus.OK).body(new GetUserInverterMonthlyResponseDto(rows));
   }
 
-    @Getter
-    @Builder
-    public static class InverterView{
+  @Getter
+  @Builder
+  public static class InverterMonthlyRow{
 
-    private final String bucketHour;
-    private final Long plantId;
-    private final Long invId;
-    private final Double hourGenKwh;
-    private final Long samples;
-        public InverterView( String bucketHour,Long plantId,
-          Long invId,Double hourGenKwh, Long samples
-        ) {
-            this.bucketHour = bucketHour;
-            this.plantId = plantId;
-            this.invId = invId;
-            this.hourGenKwh = hourGenKwh;
-            this.samples = samples;
-        }
+  private final Long day;
+  private final Long plantId;
+  private final Long invId;
+  private final Double totalValue;
+  private final Long samples;
+    public InverterMonthlyRow( Long day,Long plantId,
+      Long invId,Double totalValue, Long samples
+    ) {
+        this.day = day;
+        this.plantId = plantId;
+        this.invId = invId;
+        this.totalValue = totalValue;
+        this.samples = samples;
     }
+  }
 }

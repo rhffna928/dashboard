@@ -10,20 +10,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.samhwan.dashboard.dto.response.inverter.GetInverterHistoryResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserHeaderResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterKpiResponseDto;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterLatestListResponseDto.InverterLatestRow;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto.InverterView;
 import com.samhwan.dashboard.entity.Inverter;
-import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto;
+import com.samhwan.dashboard.dto.response.inverter.*;
 import com.samhwan.dashboard.repository.DashboardKpiView;
 import com.samhwan.dashboard.repository.InverterDailyRow;
+import com.samhwan.dashboard.repository.InverterMonthlyRow;
 import com.samhwan.dashboard.repository.InverterHistoryView;
 import com.samhwan.dashboard.repository.InverterLastListView;
 import com.samhwan.dashboard.repository.InverterRepository;
 import com.samhwan.dashboard.repository.InverterSeriesRow;
+import com.samhwan.dashboard.repository.InverterYearlyRow;
 import com.samhwan.dashboard.service.InverterInterfaceService;
 
 import lombok.RequiredArgsConstructor;
@@ -142,21 +139,82 @@ public class InverterServiceImpl implements InverterInterfaceService {
     }
 
     @Override
-    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getInverterDaily(
+    public ResponseEntity<? super GetUserInverterDailyResponseDto> getDaily(
         String userId,
         Integer plantId,
-        Integer invId
+        Integer invId,
+        String targetDate
     ) {
        try{
-            List<InverterDailyRow> rows = inverterRepository.getInverterDailyRows(userId,plantId,invId);
-            
-            return GetUserInverterSeriesResponseDto.success();
+            List<InverterDailyRow> rows = inverterRepository.getInverterDailyRows(userId,plantId,invId,targetDate);
+            List<GetUserInverterDailyResponseDto.InverterDailyRow> list = 
+                rows.stream()
+                    .map(r -> GetUserInverterDailyResponseDto.InverterDailyRow.builder()
+                        .hour(r.getHour())
+                        .plantId(r.getPlantId())
+                        .invId((r.getInvId()))
+                        .totalValue(r.getTotalValue())
+                        .samples(r.getSamples())
+                        .build())
+                    .toList();
+            return GetUserInverterDailyResponseDto.success(list);
         }catch(Exception e){
             e.printStackTrace();
-            return GetUserInverterSeriesResponseDto.databaseError();
+            return GetUserInverterDailyResponseDto.databaseError();
         }
     }
 
+    @Override
+    public ResponseEntity<? super GetUserInverterMonthlyResponseDto> getMonthly(
+        String userId,
+        Integer plantId,
+        Integer invId,
+        LocalDate targetYearMonth
+    ) {
+       try{
+            List<InverterMonthlyRow> rows = inverterRepository.getInverterMonthlyRows(userId,plantId,invId,targetYearMonth);
+            List<GetUserInverterMonthlyResponseDto.InverterMonthlyRow> list = 
+                rows.stream()
+                    .map(r -> GetUserInverterMonthlyResponseDto.InverterMonthlyRow.builder()
+                        .day(r.getDay())
+                        .plantId(r.getPlantId())
+                        .invId((r.getInvId()))
+                        .totalValue(r.getTotalValue())
+                        .samples(r.getSamples())
+                        .build())
+                    .toList();
+            return GetUserInverterMonthlyResponseDto.success(list);
+        }catch(Exception e){
+            e.printStackTrace();
+            return GetUserInverterMonthlyResponseDto.databaseError();
+        }
+    } 
+
+    @Override
+    public ResponseEntity<? super GetUserInverterYearlyResponseDto> getYearly(
+        String userId,
+        Integer plantId,
+        Integer invId,
+        LocalDate targetYear
+    ) {
+       try{
+            List<InverterYearlyRow> rows = inverterRepository.getInverterYearlyRows(userId,plantId,invId,targetYear);
+            List<GetUserInverterYearlyResponseDto.InverterYearlyRow> list = 
+                rows.stream()
+                    .map(r -> GetUserInverterYearlyResponseDto.InverterYearlyRow.builder()
+                        .month(r.getMonth())
+                        .plantId(r.getPlantId())
+                        .invId((r.getInvId()))
+                        .totalValue(r.getTotalValue())
+                        .samples(r.getSamples())
+                        .build())
+                    .toList();
+            return GetUserInverterYearlyResponseDto.success(list);
+        }catch(Exception e){
+            e.printStackTrace();
+            return GetUserInverterYearlyResponseDto.databaseError();
+        }
+    }
 
     private String normalizeToAll(String v) {
         if (v == null || v.isBlank()) return "ALL";
