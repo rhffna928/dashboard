@@ -19,6 +19,7 @@ import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponse
 import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.dto.response.inverter.GetUserInverterSeriesResponseDto;
 import com.samhwan.dashboard.repository.DashboardKpiView;
+import com.samhwan.dashboard.repository.InverterDailyRow;
 import com.samhwan.dashboard.repository.InverterHistoryView;
 import com.samhwan.dashboard.repository.InverterLastListView;
 import com.samhwan.dashboard.repository.InverterRepository;
@@ -115,7 +116,6 @@ public class InverterServiceImpl implements InverterInterfaceService {
 
     }
 
-
     @Override
     public ResponseEntity<? super GetUserInverterSeriesResponseDto> getRecentSeries(
         String userId,
@@ -135,6 +135,22 @@ public class InverterServiceImpl implements InverterInterfaceService {
                         .build())
                     .toList();
             return GetUserInverterSeriesResponseDto.success(list);
+        }catch(Exception e){
+            e.printStackTrace();
+            return GetUserInverterSeriesResponseDto.databaseError();
+        }
+    }
+
+    @Override
+    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getInverterDaily(
+        String userId,
+        Integer plantId,
+        Integer invId
+    ) {
+       try{
+            List<InverterDailyRow> rows = inverterRepository.getInverterDailyRows(userId,plantId,invId);
+            
+            return GetUserInverterSeriesResponseDto.success();
         }catch(Exception e){
             e.printStackTrace();
             return GetUserInverterSeriesResponseDto.databaseError();

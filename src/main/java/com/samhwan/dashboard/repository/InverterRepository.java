@@ -290,6 +290,180 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
       
     );
 
+    @Query(value = """
+      WITH RECURSIVE hours AS (
+          SELECT 0 AS hh
+          UNION ALL
+          SELECT hh + 1
+          FROM hours
+          WHERE hh < 23
+      ),
+      series AS (
+          SELECT DISTINCT i.plant_id, i.inv_id
+          FROM inverter i
+          JOIN plant_list2 p
+            ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
+      ),
+      agg AS (
+          SELECT
+              HOUR(i.regdate) AS hh,
+              i.plant_id,
+              i.inv_id,
+              SUM(i.out_power) AS total_value,
+              COUNT(*) AS samples
+          FROM inverter i
+          JOIN plant_list2 p
+            ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
+            AND i.regdate >= STR_TO_DATE(CONCAT(:targetDate, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+            AND i.regdate <  DATE_ADD(STR_TO_DATE(CONCAT(:targetDate, ' 00:00:00'), '%Y-%m-%d %H:%i:%s'), INTERVAL 1 DAY)
+          GROUP BY
+              HOUR(i.regdate),
+              i.plant_id,
+              i.inv_id
+      )
+      SELECT
+          h.hh AS hour,
+          s.plant_id,
+          s.inv_id,
+          COALESCE(a.total_value, 0) AS total_value,
+          COALESCE(a.samples, 0) AS samples
+      FROM hours h
+      CROSS JOIN series s
+      LEFT JOIN agg a
+            ON a.hh = h.hh
+            AND a.plant_id = s.plant_id
+            AND a.inv_id = s.inv_id
+      ORDER BY h.hh, s.plant_id, s.inv_id;  
+    """,nativeQuery = true)
+    List<InverterDailyRow> getInverterDailyRows(
+      @Param("userId") String userId,
+      @Param("plantId") Integer plantId,
+      @Param("invId") Integer invId
+    );
+    
+
+    @Query(value="""
+      WITH RECURSIVE days AS (
+          SELECT 1 AS dd
+          UNION ALL
+          SELECT dd + 1
+          FROM days
+          WHERE dd < DAY(LAST_DAY(STR_TO_DATE(CONCAT(:targetYearMonth, '-01'), '%Y-%m-%d')))
+      ),
+      series AS (
+          SELECT DISTINCT i.plant_id, i.inv_id
+          FROM inverter i
+          JOIN plant_list2 p
+            ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
+      ),
+      agg AS (
+          SELECT
+              DAY(i.regdate) AS dd,
+              i.plant_id,
+              i.inv_id,
+              SUM(i.out_power) AS total_value,
+              COUNT(*) AS samples
+          FROM inverter i
+          JOIN plant_list2 p
+            ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
+            AND i.regdate >= STR_TO_DATE(CONCAT(:targetYearMonth, '-01 00:00:00'), '%Y-%m-%d %H:%i:%s')
+            AND i.regdate <  DATE_ADD(LAST_DAY(STR_TO_DATE(CONCAT(:targetYearMonth, '-01'), '%Y-%m-%d')), INTERVAL 1 DAY)
+          GROUP BY
+              DAY(i.regdate),
+              i.plant_id,
+              i.inv_id
+      )
+      SELECT
+          d.dd AS day,
+          s.plant_id,
+          s.inv_id,
+          COALESCE(a.total_value, 0) AS total_value,
+          COALESCE(a.samples, 0) AS samples
+      FROM days d
+      CROSS JOIN series s
+      LEFT JOIN agg a
+            ON a.dd = d.dd
+            AND a.plant_id = s.plant_id
+            AND a.inv_id = s.inv_id
+      ORDER BY d.dd, s.plant_id, s.inv_id;
+
+    """,nativeQuery = true)
+    List<InverterMonthlyRow> getInverterMonthlyRows(
+      @Param("userId") String userId,
+      @Param("plantId") Integer plantId,
+      @Param("invId") Integer invId
+    );
+
+
+    @Query(value="""
+      WITH RECURSIVE months AS (
+          SELECT 1 AS mm
+          UNION ALL
+          SELECT mm + 1
+          FROM months
+          WHERE mm < 12
+      ),
+      series AS (
+          SELECT DISTINCT i.plant_id, i.inv_id
+          FROM inverter i
+          JOIN plant_list2 p
+            ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
+      ),
+      agg AS (
+          SELECT
+              MONTH(i.regdate) AS mm,
+              i.plant_id,
+              i.inv_id,
+              SUM(i.out_power) AS total_value,
+              COUNT(*) AS samples
+          FROM inverter i
+          JOIN plant_list2 p
+            ON p.plant_id = i.plant_id
+          WHERE p.user_id = :userId
+            AND (:plantId IS NULL OR i.plant_id = :plantId)
+            AND (:invId   IS NULL OR i.inv_id   = :invId)
+            AND i.regdate >= STR_TO_DATE(CONCAT(:targetYear, '-01-01 00:00:00'), '%Y-%m-%d %H:%i:%s')
+            AND i.regdate <  STR_TO_DATE(CONCAT(:targetYear + 1, '-01-01 00:00:00'), '%Y-%m-%d %H:%i:%s')
+          GROUP BY
+              MONTH(i.regdate),
+              i.plant_id,
+              i.inv_id
+      )
+      SELECT
+          m.mm AS month,
+          s.plant_id,
+          s.inv_id,
+          COALESCE(a.total_value, 0) AS total_value,
+          COALESCE(a.samples, 0) AS samples
+      FROM months m
+      CROSS JOIN series s
+      LEFT JOIN agg a
+            ON a.mm = m.mm
+            AND a.plant_id = s.plant_id
+            AND a.inv_id = s.inv_id
+      ORDER BY m.mm, s.plant_id, s.inv_id;
+    """,nativeQuery = true)
+    List<InverterYearlyRow> getInverterYearlyRows(
+      @Param("userId") String userId,
+      @Param("plantId") Integer plantId,
+      @Param("invId") Integer invId
+    );
+
 
 
 

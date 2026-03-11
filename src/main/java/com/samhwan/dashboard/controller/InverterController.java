@@ -22,7 +22,7 @@ public class InverterController {
     private final InverterService inverterService;
     private final InverterInterfaceService inverterInterfaceService;
     
-
+    //인버터 페이지
     @GetMapping("/lastest")
     public ResponseEntity<? super GetUserInverterLatestListResponseDto> getLatestList(
         @AuthenticationPrincipal String userId,
@@ -31,7 +31,7 @@ public class InverterController {
     ) {
         return inverterInterfaceService.getLatestList(userId, plantId, invId);
     }
-
+    //인버터 페이지
     @GetMapping("/series/recent")
     public ResponseEntity<? super GetUserInverterSeriesResponseDto> getRecentSeries(
         @AuthenticationPrincipal String userId,
@@ -40,6 +40,36 @@ public class InverterController {
     ) {
         return inverterInterfaceService.getRecentSeries(userId, plantId, invId);
     }
+
+    //보고서 페이지
+    @GetMapping("/daily")
+    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getDaily(
+        @AuthenticationPrincipal String userId,
+        @RequestParam(name = "plantId", required = false) Integer plantId,
+        @RequestParam(name = "invId", required = false) Integer invId
+    ) {
+        return inverterInterfaceService.getDaily(userId, plantId, invId);
+    }
+
+    //보고서 페이지
+    @GetMapping("/monthly")
+    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getMonthly(
+        @AuthenticationPrincipal String userId,
+        @RequestParam(name = "plantId", required = false) Integer plantId,
+        @RequestParam(name = "invId", required = false) Integer invId
+    ) {
+        return inverterInterfaceService.getMonthly(userId, plantId, invId);
+    }
+    //보고서 페이지
+    @GetMapping("/yearly")
+    public ResponseEntity<? super GetUserInverterSeriesResponseDto> getYearly(
+        @AuthenticationPrincipal String userId,
+        @RequestParam(name = "plantId", required = false) Integer plantId,
+        @RequestParam(name = "invId", required = false) Integer invId
+    ) {
+        return inverterInterfaceService.getYearly(userId, plantId, invId);
+    }
+
     
     // 그래프용(오늘 시계열)
     @GetMapping("/plant/{plantId}/inv/{invId}/today")
