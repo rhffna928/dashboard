@@ -5,6 +5,7 @@ import com.samhwan.dashboard.entity.Inverter;
 import com.samhwan.dashboard.service.InverterInterfaceService;
 import com.samhwan.dashboard.service.InverterService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/inverters")
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class InverterController {
         @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId
     ) {
+        
         return inverterInterfaceService.getLatestList(userId, plantId, invId);
     }
     //인버터 페이지
@@ -40,16 +44,20 @@ public class InverterController {
     ) {
         return inverterInterfaceService.getRecentSeries(userId, plantId, invId);
     }
-
+    @GetMapping("/test")
+    public String test() {
+        System.out.println("TEST API CALLED");
+        return "ok";
+    }
     //보고서 페이지
     @GetMapping("/daily")
     public ResponseEntity<? super GetUserInverterDailyResponseDto> getDaily(
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId,
-        @RequestParam(name = "targetDate")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String targetDate
+        @RequestParam(name = "targetDate") String targetDate
+
     ) {
-        System.out.println(targetDate);
         return inverterInterfaceService.getDaily(userId, plantId, invId,targetDate);
     }
 
@@ -59,7 +67,7 @@ public class InverterController {
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId,
-        @RequestParam(name = "targetYearMonth")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate targetYearMonth
+        @RequestParam(name = "targetYearMonth") String targetYearMonth
     ) {
         return inverterInterfaceService.getMonthly(userId, plantId, invId,targetYearMonth);
     }
@@ -69,7 +77,7 @@ public class InverterController {
         @AuthenticationPrincipal String userId,
         @RequestParam(name = "plantId", required = false) Integer plantId,
         @RequestParam(name = "invId", required = false) Integer invId,
-        @RequestParam(name = "targetYear")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate targetYear
+        @RequestParam(name = "targetYear") String targetYear
     ) {
         return inverterInterfaceService.getYearly(userId, plantId, invId,targetYear);
     }

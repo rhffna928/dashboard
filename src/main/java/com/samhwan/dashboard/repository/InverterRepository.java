@@ -406,7 +406,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
       @Param("userId") String userId,
       @Param("plantId") Integer plantId,
       @Param("invId") Integer invId,
-      @Param("targetYearMonth") LocalDate targetYearMonth
+      @Param("targetYearMonth") String targetYearMonth
     );
 
 
@@ -465,7 +465,7 @@ public interface InverterRepository extends JpaRepository<Inverter, Integer> {
       @Param("userId") String userId,
       @Param("plantId") Integer plantId,
       @Param("invId") Integer invId,
-      @Param("targetYear") LocalDate targetYear
+      @Param("targetYear") String targetYear
     );
 
 

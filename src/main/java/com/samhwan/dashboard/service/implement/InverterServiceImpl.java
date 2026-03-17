@@ -152,7 +152,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
                     .map(r -> GetUserInverterDailyResponseDto.InverterDailyRow.builder()
                         .hour(r.getHour())
                         .plantId(r.getPlantId())
-                        .invId((r.getInvId()))
+                        .invId(r.getInvId())
                         .totalValue(r.getTotalValue())
                         .samples(r.getSamples())
                         .build())
@@ -169,7 +169,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
         String userId,
         Integer plantId,
         Integer invId,
-        LocalDate targetYearMonth
+        String targetYearMonth
     ) {
        try{
             List<InverterMonthlyRow> rows = inverterRepository.getInverterMonthlyRows(userId,plantId,invId,targetYearMonth);
@@ -178,7 +178,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
                     .map(r -> GetUserInverterMonthlyResponseDto.InverterMonthlyRow.builder()
                         .day(r.getDay())
                         .plantId(r.getPlantId())
-                        .invId((r.getInvId()))
+                        .invId(r.getInvId())
                         .totalValue(r.getTotalValue())
                         .samples(r.getSamples())
                         .build())
@@ -195,7 +195,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
         String userId,
         Integer plantId,
         Integer invId,
-        LocalDate targetYear
+        String targetYear
     ) {
        try{
             List<InverterYearlyRow> rows = inverterRepository.getInverterYearlyRows(userId,plantId,invId,targetYear);
@@ -204,7 +204,7 @@ public class InverterServiceImpl implements InverterInterfaceService {
                     .map(r -> GetUserInverterYearlyResponseDto.InverterYearlyRow.builder()
                         .month(r.getMonth())
                         .plantId(r.getPlantId())
-                        .invId((r.getInvId()))
+                        .invId(r.getInvId())
                         .totalValue(r.getTotalValue())
                         .samples(r.getSamples())
                         .build())

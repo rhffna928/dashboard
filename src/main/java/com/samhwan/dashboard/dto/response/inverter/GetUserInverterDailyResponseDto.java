@@ -28,6 +28,11 @@ public class GetUserInverterDailyResponseDto extends ResponseDto {
     return ResponseEntity.status(HttpStatus.OK).body(new GetUserInverterDailyResponseDto(day));
   }
 
+  public static ResponseEntity<ResponseDto> notExistUser(){
+        ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_USER, ResponseMessage.NOT_EXISTED_USER);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+  }
+  
   @Getter
   @Builder
   public static class InverterDailyRow{

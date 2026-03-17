@@ -50,11 +50,11 @@ public interface InverterInterfaceService {
         );
 
         ResponseEntity<? super GetUserInverterMonthlyResponseDto> getMonthly(
-                String userId, Integer plantId, Integer invId, LocalDate targetYearMonth
+                String userId, Integer plantId, Integer invId, String targetYearMonth
         );
 
         ResponseEntity<? super GetUserInverterYearlyResponseDto> getYearly(
-                String userId, Integer plantId, Integer invId, LocalDate targetYear
+                String userId, Integer plantId, Integer invId, String targetYear
         );
 
 }

@@ -28,23 +28,23 @@ public class GetUserInverterSeriesResponseDto extends ResponseDto {
     return ResponseEntity.status(HttpStatus.OK).body(new GetUserInverterSeriesResponseDto(series));
   }
 
-    @Getter
-    @Builder
-    public static class InverterView{
+  @Getter
+  @Builder
+  public static class InverterView{
 
-    private final String bucketHour;
-    private final Long plantId;
-    private final Long invId;
-    private final Double hourGenKwh;
-    private final Long samples;
-        public InverterView( String bucketHour,Long plantId,
-          Long invId,Double hourGenKwh, Long samples
-        ) {
-            this.bucketHour = bucketHour;
-            this.plantId = plantId;
-            this.invId = invId;
-            this.hourGenKwh = hourGenKwh;
-            this.samples = samples;
-        }
-    }
+  private final String bucketHour;
+  private final Long plantId;
+  private final Long invId;
+  private final Double hourGenKwh;
+  private final Long samples;
+      public InverterView( String bucketHour,Long plantId,
+        Long invId,Double hourGenKwh, Long samples
+      ) {
+          this.bucketHour = bucketHour;
+          this.plantId = plantId;
+          this.invId = invId;
+          this.hourGenKwh = hourGenKwh;
+          this.samples = samples;
+      }
+  }
 }
